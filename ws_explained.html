@@ -114,6 +114,7 @@ pre.code .seg { display: block; padding: 8px 12px; margin: 0 0 4px; border-left:
 .blk { position: absolute; top: 0; bottom: 0; border-radius: 3px; color: #fff; font-size: 11px; display: flex; align-items: center; justify-content: center; overflow: hidden; white-space: nowrap; }
 .blk.load { background: var(--load); } .blk.comp { background: var(--comp); } .blk.sync { background: var(--sync); }
 .blk.issue { background: var(--issue); } .blk.ready { background: var(--ready); } .blk.read { background: var(--comp); opacity: .5; }
+.blk.epi { background: var(--epi); }
 .tcur { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--sync); z-index: 2; }
 .metrics { display: flex; gap: 28px; flex-wrap: wrap; margin: 6px 0 10px; }
 .metrics div { font-size: 13px; color: var(--muted); } .metrics b { display: block; font-size: 24px; color: var(--accent); line-height: 1.2; }
@@ -294,7 +295,7 @@ mbarrier = 放在 shared memory 里的同步信号，等的人不用和其他线
   <tr><td>一条指令算多大</td><td>16×8×16</td><td>64×128×16</td><td>128×128×16</td></tr>
   <tr><td>每个 k-tile 的指令</td><td>192 条 LDSM + 512 条 HMMA</td><td>8 条 HGMMA</td><td>4 条 UTCHMMA</td></tr>
   <tr><td>操作数怎么到 Tensor Core</td><td>shared memory → 寄存器 → Tensor Core</td><td>shared memory → Tensor Core</td><td>shared memory → Tensor Core</td></tr>
-  <tr><td>矩阵乘期间，发指令的线程</td><td>被占用，算完才能继续</td><td>空出来，但累加器还在它的寄存器里</td><td>不等结果，直接处理下一块</td></tr>
+  <tr><td>矩阵乘期间，发指令的线程</td><td>被占用，算完才能继续</td><td>不用等，可以先做别的；但结果会写回它的寄存器，要回来取</td><td>发完就走；结果在 TMEM，不用回来</td></tr>
   <tr><td>累加器在哪</td><td>每个计算 warp 的寄存器</td><td>warpgroup 的寄存器</td><td>TMEM（专用的张量内存）</td></tr>
   <tr><td>每线程寄存器（编译结果）</td><td>132</td><td>168，计算线程可借到 232</td><td>70</td></tr>
   <tr><td>谁归还缓冲</td><td>每个计算 warp 自己 arrive</td><td>每个计算 warp 等矩阵乘完成后 arrive</td><td>硬件，在矩阵乘完成时自动通知</td></tr>
@@ -303,6 +304,90 @@ mbarrier = 放在 shared memory 里的同步信号，等的人不用和其他线
   <tr><td>WS 的地位</td><td>可选的优化</td><td>高性能 kernel 的标准写法</td><td>结构上必需：发指令和写回的线程天然分开</td></tr>
 </table>
 <p class="small">指令条数和寄存器数来自本机 CUDA 12.9 编译后的汇编。5080 的版本实际运行过；H100、B200 的版本只编译过，过程按源码和汇编描述，没有在真机上运行。</p>
+
+<h3 style="margin-top:20px">异步矩阵乘：H100 和 B200 的不同</h3>
+<p>两者都是“发出指令后不等结果”。区别在于<b>结果放在哪</b>，以及<b>谁能知道它算完了</b>。5080 没有异步矩阵乘（第 7 节），所以这里只比 H100 和 B200。</p>
+<table>
+  <tr><th style="width:22%"></th><th>H100（sm_90a）：<code>wgmma</code></th><th>B200（sm_100a）：<code>tcgen05.mma</code></th></tr>
+  <tr><td>谁发指令</td><td>一个 warpgroup 的 128 个线程一起发</td><td>1 个线程</td></tr>
+  <tr><td>一条指令最大算多大</td><td>64×256×16</td><td>128×256×16；两个 CTA 合发时 256×256×16</td></tr>
+  <tr><td>累加器在哪</td><td>这 128 个线程自己的寄存器</td><td>TMEM，不属于任何线程</td></tr>
+  <tr><td>怎么知道算完了</td><td>发指令的 warpgroup 自己执行 <code>wgmma.wait_group</code></td><td><code>tcgen05.commit</code> 让硬件在算完时通知一个 mbarrier，任何线程都能等它</td></tr>
+  <tr><td>谁能取走结果</td><td>只有发指令的那 128 个线程</td><td>任何 warp，用 <code>tcgen05.ld</code> 读</td></tr>
+  <tr><td>寄存器压力</td><td>大：累加器全在寄存器里，本例每线程 64 个</td><td>小：本例每线程一共只用 70 个寄存器</td></tr>
+</table>
+<div class="grid g3" style="margin-top:14px">
+  <div class="card"><h3>H100：线程空出来，累加器还在寄存器里</h3>
+    <ul>
+      <li><b>空出来。</b><code>wgmma</code> 发出后，这 128 个线程不会停下来等，可以接着执行后面的指令，Tensor Core 在后台计算。</li>
+      <li><b>累加器还在寄存器里。</b>结果最终写进这些线程的寄存器。执行 <code>wait_group</code> 之前，这些寄存器不能读也不能写；它们一直被占着，做别的事只能用剩下的寄存器。</li>
+      <li><b>还得回来。</b>结果只有这些线程拿得到，所以它们迟早要回来等结果，并且自己写回。</li>
+    </ul></div>
+  <div class="card"><h3>H100：空出来的线程能做什么</h3>
+    <ul>
+      <li><b>什么都不做。</b>本页的 H100 用例发完 4 条 <code>wgmma</code> 立刻等结果，没有利用异步，只省了指令数。</li>
+      <li><b>提前准备下一步。</b>CUTLASS 的主循环允许 1 批 <code>wgmma</code> 留在后台（<code>K_PIPE_MMAS = 1</code>），线程同时去等下一块数据、发下一批指令。</li>
+      <li><b>做别的计算。</b>FlashAttention-3 在矩阵乘后台计算时，让同一组线程对上一块结果做 softmax。</li>
+    </ul></div>
+  <div class="card"><h3>对并行的影响</h3>
+    <ul>
+      <li><b>H100：多一路并行，就多一组线程。</b>想让写回和下一个 tile 的计算重叠，必须有第二个 warpgroup，各自放下一整个 tile 的累加器。寄存器不够用，所以要靠 <code>setmaxnreg</code> 从 producer 借。</li>
+      <li><b>B200：多一路并行，只多一块 TMEM。</b>发指令的线程发完就走，写回交给别的 warp；想重叠，只要在 TMEM 里多开一块累加区。</li>
+    </ul></div>
+</div>
+<div class="card" style="margin-top:14px">
+  <h3>写回和下一个 tile 的计算怎么重叠</h3>
+  <p>连续算几个输出 tile，看 Tensor Core 在写回期间有没有活干。</p>
+  <h3 style="margin-top:18px">H100，两个 warpgroup 合算一个 tile <span>本页用例；CUTLASS 的 cooperative</span></h3>
+  <div class="lane"><div class="lname">warpgroup 0 和 1</div><div class="track">
+    <div class="blk comp" style="left:0;width:25.6%">tile 0：矩阵乘</div><div class="blk epi" style="left:26%;width:11.6%">写回 tile 0</div>
+    <div class="blk comp" style="left:38%;width:25.6%">tile 1：矩阵乘</div><div class="blk epi" style="left:64%;width:11.6%">写回 tile 1</div>
+    <div class="blk comp" style="left:76%;width:24%">tile 2：矩阵乘</div></div></div>
+  <div class="lane"><div class="lname">Tensor Core</div><div class="track">
+    <div class="blk comp" style="left:0;width:25.6%">tile 0</div><div class="blk comp" style="left:38%;width:25.6%">tile 1</div>
+    <div class="blk comp" style="left:76%;width:24%">tile 2</div></div></div>
+  <p class="small">写回期间，这个 CTA 的 Tensor Core 没有活干。</p>
+  <h3 style="margin-top:18px">H100，两个 warpgroup 各算各的 tile <span>CUTLASS 的 pingpong</span></h3>
+  <div class="lane"><div class="lname">warpgroup 0</div><div class="track">
+    <div class="blk comp" style="left:0;width:25.6%">tile 0：矩阵乘</div><div class="blk epi" style="left:26%;width:11.6%">写回 tile 0</div>
+    <div class="blk comp" style="left:52%;width:25.6%">tile 2：矩阵乘</div><div class="blk epi" style="left:78%;width:11.6%">写回 tile 2</div></div></div>
+  <div class="lane"><div class="lname">warpgroup 1</div><div class="track">
+    <div class="blk comp" style="left:26%;width:25.6%">tile 1：矩阵乘</div><div class="blk epi" style="left:52%;width:11.6%">写回 tile 1</div>
+    <div class="blk comp" style="left:78%;width:22%">tile 3：矩阵乘</div></div></div>
+  <div class="lane"><div class="lname">Tensor Core</div><div class="track">
+    <div class="blk comp" style="left:0;width:25.6%">tile 0</div><div class="blk comp" style="left:26%;width:25.6%">tile 1</div>
+    <div class="blk comp" style="left:52%;width:25.6%">tile 2</div><div class="blk comp" style="left:78%;width:22%">tile 3</div></div></div>
+  <p class="small">一个 warpgroup 写回时，另一个在做矩阵乘，Tensor Core 不停。代价是每个 warpgroup 要独自放下一整个 tile 的累加器：同样 128×128 的 tile，每线程从 64 个寄存器涨到 128 个。</p>
+  <h3 style="margin-top:18px">B200，TMEM 里开两块累加区 <span>DeepGEMM 的做法</span></h3>
+  <div class="lane"><div class="lname">MMA 线程 ×1</div><div class="track">
+    <div class="blk issue" style="left:0;width:25.6%">发 tile 0 的指令</div><div class="blk issue" style="left:26%;width:25.6%">发 tile 1 的指令</div>
+    <div class="blk issue" style="left:52%;width:25.6%">发 tile 2 的指令</div><div class="blk issue" style="left:78%;width:22%">发 tile 3 的指令</div></div></div>
+  <div class="lane"><div class="lname">Tensor Core</div><div class="track">
+    <div class="blk comp" style="left:0;width:25.6%">tile 0 → 累加区 0</div><div class="blk comp" style="left:26%;width:25.6%">tile 1 → 累加区 1</div>
+    <div class="blk comp" style="left:52%;width:25.6%">tile 2 → 累加区 0</div><div class="blk comp" style="left:78%;width:22%">tile 3 → 累加区 1</div></div></div>
+  <div class="lane"><div class="lname">epilogue warp ×4</div><div class="track">
+    <div class="blk epi" style="left:26%;width:11.6%">写回 tile 0</div><div class="blk epi" style="left:52%;width:11.6%">写回 tile 1</div>
+    <div class="blk epi" style="left:78%;width:11.6%">写回 tile 2</div></div></div>
+  <p class="small">Tensor Core 同样不停，但只多用了一块 TMEM，没有多用线程，也不占寄存器。本页的 B200 用例只开了一块累加区，没有做这种重叠。</p>
+  <div class="legend">
+    <span><i style="background:var(--comp)"></i>矩阵乘</span>
+    <span><i style="background:var(--issue)"></i>只发矩阵乘指令</span>
+    <span><i style="background:var(--epi)"></i>写回结果</span>
+    <span><i style="background:var(--idle)"></i>空闲或在等信号</span>
+  </div>
+</div>
+<p class="small">这是示意图，不是测量：块的长短只表示先后和重叠关系，并假设一个 CTA 的矩阵乘在 Tensor Core 上是一个接一个做的。</p>
+
+<h3 style="margin-top:20px">TMA：H100 和 B200 的不同</h3>
+<p>基本用法两边一样：一个线程给出坐标，硬件搬一整块，搬完通知 mbarrier。本页三个用例的 TMA 代码完全相同。差别在周边：</p>
+<table>
+  <tr><th style="width:22%"></th><th>H100（sm_90a）</th><th>B200（sm_100a）</th></tr>
+  <tr><td>缓冲用完后谁通知 producer</td><td>计算的 warp，等矩阵乘完成后自己 arrive</td><td>硬件：<code>tcgen05.commit</code> 登记后，矩阵乘完成时自动通知</td></tr>
+  <tr><td>多个 CTA 协作</td><td>广播：一次加载送到 cluster 里的多个 CTA</td><td>广播之外，另有 <code>cta_group::2</code> 形式，配合两个 CTA 合发的矩阵乘</td></tr>
+  <tr><td>不连续的数据</td><td>只能搬连续的一块</td><td>新增 <code>gather4</code> / <code>scatter4</code>：一次搬 4 行不相邻的数据</td></tr>
+  <tr><td>和 TMEM 的关系</td><td>没有 TMEM</td><td>TMA 仍然只搬到 shared memory；TMEM 只由 <code>tcgen05</code> 的指令读写</td></tr>
+</table>
+<p class="small">这一小节的指令形式来自 CUTLASS 的源码。<code>cta_group::2</code> 和 <code>gather4</code> / <code>scatter4</code> 的具体行为是按源码里的用法理解的，本机没有编译或运行过。</p>
 
 <h2>6. 设计理念小结</h2>
 <div class="grid g3">
@@ -393,6 +478,7 @@ mbarrier = 放在 shared memory 里的同步信号，等的人不用和其他线
   <tr><td>5080 上的同步停顿、Tensor Core 利用率</td><td><span class="badge b-meas">实测</span></td><td>Nsight Compute，4096 规模。采集时 TMA 的写法还没改成最终版，数值可能略有出入。</td></tr>
   <tr><td>三种架构的指令条数、寄存器数</td><td><span class="badge b-asm">编译 + 反汇编</span></td><td>本机 CUDA 12.9 编译三个目标后用 cuobjdump 统计。</td></tr>
   <tr><td>H100、B200 用例能算对、能跑多快</td><td><span class="badge b-none">未验证</span></td><td>本机只有 5080，这两份代码没有运行过。描述符编码照 CUTLASS 和 DeepGEMM 写。</td></tr>
+  <tr><td>第 5 节里 H100 和 B200 的异步矩阵乘、TMA 的差别</td><td><span class="badge b-none">读源码</span></td><td>依据指令的语义和 CUTLASS、DeepGEMM 的源码，没有在真机上运行。<code>wgmma</code> 只被 sm_90a 接受、<code>tcgen05</code> 只被 sm_100a 接受是本机编译确认的。重叠的时间线是示意图。</td></tr>
   <tr><td>第 4 节的流水模拟器</td><td><span class="badge b-none">简化模型</span></td><td>按 kernel 里的握手规则推演，用来说明原理，不是测量结果。</td></tr>
   <tr><td>H200 上 WS 更能掩盖访存延迟</td><td><span class="badge b-sim">仿真，旁证</span></td><td>Accel-Sim 里把访存延迟加倍后比较变慢的幅度。两个 kernel 不是同一个，仿真误差 1%～29%，只能说明方向。</td></tr>
   <tr><td><code>setmaxnreg</code> 在 H100 上的收益</td><td><span class="badge b-none">无数据</span></td><td>模拟器把它当空操作；5080 上实测大 tile +3%～9%。</td></tr>
@@ -607,7 +693,7 @@ __syncthreads();`],
         s: [['free', '已去准备下一块缓冲'], ['busy', '2 个 warpgroup 各发 4 条 wgmma']],
         code: 'wgmma_fence();\nwgmma_m64n128k16(acc, gmma_desc(sA + kk * 32), gmma_desc(sB + kk * 32));   // kk = 0..3\n\n汇编：\nWARPGROUP.ARRIVE\nHGMMA.64x128x16.F32 R24, gdesc[UR16], R24' },
       { t: 'Tensor Core 自己读、自己算', n: [2, 3], a: [2],
-        d: 'wgmma 是异步的：指令发出后，Tensor Core 从 shared memory 读操作数并计算，结果落到 warpgroup 的寄存器（每线程 64 个）。这段时间 warpgroup 是空的。本例直接等结果；FlashAttention-3 这类 kernel 会让它去做别的计算。',
+        d: 'wgmma 是异步的：指令发出后，Tensor Core 从 shared memory 读操作数并计算，结果落到 warpgroup 的寄存器（每线程 64 个）。这段时间 warpgroup 可以执行别的指令，只是不能碰这些寄存器。本例直接等结果；它还能做什么见第 5 节。',
         s: [['free', '已去准备下一块缓冲'], ['free', '指令已发出，可以做别的']],
         code: 'wgmma_commit_group();\nwgmma_wait_group0();\n\n汇编：\nHGMMA.64x128x16.F32 R24, gdesc[UR8], R24, gsb0\nWARPGROUP.DEPBAR.LE gsb0, 0x0' },
       { t: '归还缓冲；全部算完后写回', n: [3, 4], a: [3],
