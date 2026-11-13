@@ -1,0 +1,5 @@
+# build outputs (bash build.sh)
+/ws_gemm
+/arch/sm120_5080
+/arch/sm90_h100
+/arch/sm100_b200
