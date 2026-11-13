@@ -8,32 +8,36 @@
 :root {
   --bg: #f6f7f9; --card: #ffffff; --ink: #1d2733; --muted: #667085; --line: #e3e7ed;
   --load: #4c9be8; --comp: #22a06b; --sync: #e5484d; --issue: #f5a524; --epi: #8e6fd8; --idle: #dfe3ea;
-  --accent: #3b5bdb; --soft: #eef2ff;
+  --accent: #3b5bdb; --soft: #eef2ff; --ready: #a9cdf3;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #0f1216; --card: #181d24; --ink: #e7eaf0; --muted: #98a2b3; --line: #2a313b; --idle: #333b47; --soft: #1e2740; }
+  :root { --bg: #0f1216; --card: #181d24; --ink: #e7eaf0; --muted: #98a2b3; --line: #2a313b; --idle: #333b47; --soft: #1e2740; --ready: #35618f; }
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); line-height: 1.65;
+body { margin: 0; background: var(--bg); color: var(--ink);
   font: 15px/1.65 -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; }
 main { max-width: 1080px; margin: 0 auto; padding: 32px 20px 64px; }
 h1 { font-size: 28px; margin: 0 0 8px; }
 h2 { font-size: 21px; margin: 44px 0 6px; padding-top: 8px; border-top: 1px solid var(--line); }
 h3 { font-size: 16px; margin: 0 0 8px; }
 p { margin: 8px 0; }
+ul { margin: 6px 0; padding-left: 20px; } li { margin: 5px 0; }
 .lead { color: var(--muted); margin-bottom: 20px; }
 .small { font-size: 13px; color: var(--muted); }
 code { font: 13px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: var(--soft); padding: 1px 5px; border-radius: 4px; }
+pre { background: var(--soft); border-radius: 8px; padding: 12px 14px; overflow-x: auto; font: 13px/1.5 ui-monospace, Menlo, Consolas, monospace; margin: 8px 0; }
 .grid { display: grid; gap: 14px; }
 .g3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+.g2 { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; min-width: 0; }
 .card h3 span:not(.badge) { font-weight: 400; color: var(--muted); font-size: 13px; }
-.big { font-size: 30px; font-weight: 700; color: var(--accent); line-height: 1.2; }
+.big { font-size: 28px; font-weight: 700; color: var(--accent); line-height: 1.2; }
 dl { margin: 0; }
 dt { font-weight: 600; margin-top: 10px; font-size: 13px; color: var(--accent); }
 dd { margin: 2px 0 0; }
 .badge { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; color: #fff; white-space: nowrap; }
 .b-meas { background: #22a06b; } .b-asm { background: #3b82f6; } .b-sim { background: #f08c00; } .b-none { background: #868e96; }
+.yes { color: #22a06b; font-weight: 600; } .no { color: #e5484d; font-weight: 600; }
 table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
 th, td { padding: 9px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
 th { font-size: 13px; color: var(--muted); font-weight: 600; background: var(--soft); }
@@ -41,6 +45,79 @@ tr:last-child td { border-bottom: 0; }
 .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
 .tabs button { border: 1px solid var(--line); background: var(--card); color: var(--ink); padding: 6px 14px; border-radius: 999px; cursor: pointer; font: inherit; }
 .tabs button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin: 10px 0; }
+.ctl .tabs { margin: 0; }
+.ctl input[type=range] { width: 240px; max-width: 100%; }
+.ctl button.act, .stepnav button { border: 1px solid var(--line); background: var(--card); color: var(--ink); padding: 5px 14px; border-radius: 6px; cursor: pointer; font: inherit; }
+.stepnav button:disabled { opacity: .4; cursor: default; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--muted); margin-top: 10px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+/* example matrices */
+.mats { display: flex; flex-wrap: wrap; gap: 22px; align-items: flex-start; margin: 12px 0 4px; }
+.mats figure { margin: 0; }
+.mats svg { max-width: 100%; height: auto; display: block; }
+.mats figcaption { font-size: 13px; color: var(--muted); max-width: 322px; margin-top: 6px; }
+.slots { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+.slot { border: 1px solid var(--line); border-left: 5px solid var(--idle); border-radius: 8px; padding: 8px 10px; font-size: 13px; }
+.slot b { display: block; }
+.slot.load { border-left-color: var(--load); } .slot.ready { border-left-color: var(--ready); }
+.slot.read, .slot.comp { border-left-color: var(--comp); } .slot.empty, .slot.idle { color: var(--muted); }
+.kstrip { display: grid; grid-template-columns: repeat(64, 1fr); gap: 1px; margin-top: 6px; }
+.kstrip i { height: 26px; border-radius: 2px; background: var(--idle); cursor: pointer; }
+.kstrip i.done { background: var(--comp); opacity: .45; } .kstrip i.cur { background: var(--comp); outline: 2px solid var(--ink); } .kstrip i.pre { background: var(--load); }
+.kticks { display: flex; justify-content: space-between; }
+.mul { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; margin: 10px 0; }
+.mul figure { margin: 0; text-align: center; font-size: 13px; color: var(--muted); }
+.mul .op { font-size: 17px; color: var(--muted); }
+.mbox { position: relative; display: flex; border: 2px solid var(--ink); background: var(--card); margin: 0 auto 4px; }
+.mbox.rows { flex-direction: column; }
+.mbox .band { flex: 1; }
+.band.done { background: var(--comp); opacity: .45; } .band.cur { background: var(--comp); } .band.pre { background: var(--ready); }
+.mbox .fill { position: absolute; inset: 0; background: var(--comp); }
+.mbox .hline { position: absolute; left: 0; right: 0; height: 2px; background: var(--sync); }
+.mbox .vline { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--sync); }
+.mbox .dot { position: absolute; width: 9px; height: 9px; border-radius: 50%; background: var(--sync); transform: translate(-50%, -50%); }
+/* thread map and role-coloured code */
+.wrow { display: grid; grid-template-columns: minmax(0, 352px) 1fr; gap: 10px; align-items: center; margin: 3px 0; }
+.wsq { display: grid; grid-template-columns: repeat(32, 1fr); gap: 1px; }
+.wsq i { aspect-ratio: 1; border-radius: 2px; background: var(--idle); }
+.wsq i.load { background: var(--load); } .wsq i.comp { background: var(--comp); } .wsq i.issue { background: var(--issue); } .wsq i.epi { background: var(--epi); }
+.wrow span { font-size: 12.5px; color: var(--muted); }
+pre.code { padding: 0; background: none; margin: 10px 0 0; }
+pre.code .seg { display: block; padding: 8px 12px; margin: 0 0 4px; border-left: 5px solid var(--line); background: var(--soft); border-radius: 0 6px 6px 0; overflow-x: auto; }
+.seg.load { border-left-color: var(--load); } .seg.comp { border-left-color: var(--comp); } .seg.issue { border-left-color: var(--issue); } .seg.epi { border-left-color: var(--epi); }
+/* data path and step player */
+.path { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; margin: 8px 0 4px; }
+.node { border: 1px solid var(--line); background: var(--soft); border-radius: 8px; padding: 6px 10px; font-size: 13px; text-align: center; }
+.node.hot { border-color: var(--comp); box-shadow: inset 0 0 0 1px var(--comp); }
+.node.dim, .arrow.dim { opacity: .45; }
+.node.on { box-shadow: 0 0 0 2px var(--accent); font-weight: 600; }
+.node.hot.on { box-shadow: inset 0 0 0 1px var(--comp), 0 0 0 2px var(--accent); }
+.arrow { flex: 1; min-width: 96px; text-align: center; font-size: 12px; color: var(--muted); }
+.arrow::after { content: "→"; display: block; line-height: 1; font-size: 18px; color: var(--muted); }
+.arrow.on, .arrow.on::after { color: var(--accent); font-weight: 600; }
+.actors { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 10px; }
+.actor { border-radius: 8px; padding: 6px 12px; font-size: 13px; border: 1px solid var(--line); min-width: 190px; }
+.actor b { display: block; }
+.actor.busy { background: var(--comp); border-color: var(--comp); color: #fff; }
+.actor.wait { background: var(--idle); }
+.actor.free { border: 1px dashed var(--accent); color: var(--accent); }
+.stepnav { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 4px 0 10px; }
+.nums { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 8px; font-size: 13px; color: var(--muted); }
+.nums b { color: var(--ink); font-size: 18px; }
+.tile { width: 100%; max-width: 230px; aspect-ratio: 1; display: grid; gap: 1px; background: var(--card); border: 2px solid var(--ink); margin: 10px auto; }
+.tile div { display: flex; align-items: center; justify-content: center; font-size: 13px; color: #fff; text-align: center; }
+/* timeline lanes (pipeline simulator) */
+.lane { display: grid; grid-template-columns: 190px 1fr; gap: 10px; align-items: center; margin: 6px 0; }
+.lane .lname { font-size: 13px; text-align: right; color: var(--muted); }
+.track { position: relative; height: 28px; background: var(--idle); border-radius: 5px; }
+.blk { position: absolute; top: 0; bottom: 0; border-radius: 3px; color: #fff; font-size: 11px; display: flex; align-items: center; justify-content: center; overflow: hidden; white-space: nowrap; }
+.blk.load { background: var(--load); } .blk.comp { background: var(--comp); } .blk.sync { background: var(--sync); }
+.blk.issue { background: var(--issue); } .blk.ready { background: var(--ready); } .blk.read { background: var(--comp); opacity: .5; }
+.tcur { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--sync); z-index: 2; }
+.metrics { display: flex; gap: 28px; flex-wrap: wrap; margin: 6px 0 10px; }
+.metrics div { font-size: 13px; color: var(--muted); } .metrics b { display: block; font-size: 24px; color: var(--accent); line-height: 1.2; }
+.rule { border-left: 4px solid var(--accent); background: var(--soft); border-radius: 6px; padding: 8px 12px; margin: 10px 0; }
 /* bar chart */
 .bar-row { display: grid; grid-template-columns: 270px 1fr 64px; align-items: center; gap: 10px; margin: 6px 0; }
 .bar-row .name { font-size: 13px; }
@@ -51,43 +128,10 @@ tr:last-child td { border-bottom: 0; }
 .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 14px; }
 .step { border-left: 4px solid var(--accent); background: var(--soft); border-radius: 6px; padding: 8px 12px; }
 .step b { font-size: 20px; }
-/* timeline */
-.lane { display: grid; grid-template-columns: 210px 1fr; gap: 10px; align-items: center; margin: 7px 0; }
-.lane .lname { font-size: 13px; text-align: right; color: var(--muted); }
-.track { position: relative; height: 30px; background: var(--idle); border-radius: 5px; }
-.blk { position: absolute; top: 0; bottom: 0; border-radius: 4px; color: #fff; font-size: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; white-space: nowrap; }
-.load { background: var(--load); } .comp { background: var(--comp); } .sync { background: var(--sync); }
-.issue { background: var(--issue); } .epi { background: var(--epi); }
-.ghost { opacity: .45; border: 1px dashed #fff; }
-.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--muted); margin-top: 10px; }
-.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
-/* data path */
-.path { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; margin: 8px 0 4px; }
-.node { border: 1px solid var(--line); background: var(--soft); border-radius: 8px; padding: 6px 10px; font-size: 13px; text-align: center; }
-.node.hot { border-color: var(--comp); box-shadow: inset 0 0 0 1px var(--comp); }
-.arrow { flex: 1; min-width: 96px; text-align: center; font-size: 12px; color: var(--muted); }
-.arrow::after { content: "→"; display: block; line-height: 1; font-size: 18px; color: var(--muted); }
-.nums { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 8px; font-size: 13px; color: var(--muted); }
-.nums b { color: var(--ink); font-size: 18px; }
-ul { margin: 6px 0; padding-left: 20px; } li { margin: 5px 0; }
-.yes { color: #22a06b; font-weight: 600; } .no { color: #e5484d; font-weight: 600; }
-.tile { width: 100%; max-width: 230px; aspect-ratio: 1; display: grid; gap: 1px; background: var(--card); border: 2px solid var(--ink); margin: 10px auto; }
-.tile div { display: flex; align-items: center; justify-content: center; font-size: 13px; color: #fff; text-align: center; }
-.node.dim, .arrow.dim { opacity: .45; }
-.node.on { box-shadow: 0 0 0 2px var(--accent); font-weight: 600; }
-.node.hot.on { box-shadow: inset 0 0 0 1px var(--comp), 0 0 0 2px var(--accent); }
-.arrow.on, .arrow.on::after { color: var(--accent); font-weight: 600; }
-.actors { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 10px; }
-.actor { border-radius: 8px; padding: 6px 12px; font-size: 13px; border: 1px solid var(--line); min-width: 190px; }
-.actor b { display: block; }
-.actor.busy { background: var(--comp); border-color: var(--comp); color: #fff; }
-.actor.wait { background: var(--idle); }
-.actor.free { border: 1px dashed var(--accent); color: var(--accent); }
-.stepnav { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 4px 0 10px; }
-.stepnav button { border: 1px solid var(--line); background: var(--card); color: var(--ink); padding: 5px 14px; border-radius: 6px; cursor: pointer; font: inherit; }
-.stepnav button:disabled { opacity: .4; cursor: default; }
-pre { background: var(--soft); border-radius: 8px; padding: 12px 14px; overflow-x: auto; font: 13px/1.5 ui-monospace, Menlo, Consolas, monospace; margin: 8px 0; }
-@media (max-width: 720px) { .bar-row { grid-template-columns: 1fr; gap: 2px; } .bar-row .val { text-align: left; } .lane { grid-template-columns: 1fr; } .lane .lname { text-align: left; } }
+@media (max-width: 720px) {
+  .bar-row { grid-template-columns: 1fr; gap: 2px; } .bar-row .val { text-align: left; }
+  .lane, .wrow { grid-template-columns: 1fr; } .lane .lname { text-align: left; }
+}
 </style>
 </head>
 <body>
@@ -95,136 +139,95 @@ pre { background: var(--soft); border-radius: 8px; padding: 12px 14px; overflow-
 
 <h1>TMA · MMA · Warp Specialization：设计理念与效果</h1>
 <p class="lead">GPU 上的矩阵乘由 Tensor Core（专门做矩阵乘的硬件单元）完成。它越来越快之后，瓶颈变成了“怎么把数据及时喂给它”。
-下面三项技术都在解决这个问题。本页用同一个 GEMM（<code>C = A·Bᵀ</code>，FP16 输入、FP32 累加，tile 128×128×64）在 RTX 5080 上的实测数据，以及为 H100、B200 编译出的汇编来说明。
-<b>5080 只支持 WS 所需部件的一部分，它的实测数字只能当作下限</b>，原因见第 2 节。</p>
+Warp specialization（下文简称 WS）的做法是：把一个线程块里的线程分成不同角色，有的只负责搬数据，有的只负责计算，中间用几块缓冲接力，让搬和算同时进行。
+本页用一个具体的矩阵乘例子，一步步说明数据怎么取、怎么算、线程怎么分工、流水怎么掩盖访存延迟，以及 RTX 5080、H100、B200 三种架构的差别。</p>
 
 <div class="grid g3">
   <div class="card"><h3>TMA <span>Tensor Memory Accelerator</span></h3>
     <p>把“搬一整块数据”做成一条指令，交给硬件拷贝引擎。</p>
-    <div class="big">+4%</div><p class="small">5080 实测：多级流水改用 TMA 后的提速</p></div>
+    <div class="big">2 条指令</div><p class="small">一个线程搬完一个 k-tile 的 A 和 B（共 32 KB）</p></div>
   <div class="card"><h3>MMA <span>矩阵乘加指令的三代演进</span></h3>
     <p>一条指令算得更大，操作数和累加器逐步离开寄存器。</p>
-    <div class="big">704 → 8 → 4</div><p class="small">每个 k-tile 发出的指令数：5080 / H100 / B200（汇编统计）</p></div>
-  <div class="card"><h3>Warp Specialization <span>简称 WS</span></h3>
-    <p>线程分角色：有的只搬数据，有的只计算，彼此用 mbarrier 握手。</p>
-    <div class="big">+6.5%</div><p class="small">5080 实测，只含三种架构共有的那部分机制，是下限（见第 2 节）</p></div>
+    <div class="big">704 → 8 → 4</div><p class="small">每个 k-tile 发出的指令数：5080 / H100 / B200</p></div>
+  <div class="card"><h3>Warp Specialization <span>WS</span></h3>
+    <p>线程分角色，用成对的信号一对一握手，不再全体同步。</p>
+    <div class="big">0 次</div><p class="small">每个 k-tile 需要的全体同步次数（不分工时是 1～2 次）</p></div>
 </div>
-<p class="small">名词：warp = 32 个线程，GPU 的最小调度单位；warpgroup = 4 个 warp；CTA（block）= 一个线程块，这里负责一个 128×128 的输出 tile；
-k-tile = 沿 K 方向切出的一段（64 列）输入数据，一个 tile 要依次处理很多个 k-tile。</p>
+<p class="small">名词：warp = 32 个线程，GPU 的最小调度单位；warpgroup = 4 个 warp；CTA = 一个线程块；shared memory = CTA 内部的高速缓冲区；
+mbarrier = 放在 shared memory 里的同步信号，等的人不用和其他线程一起停下来。</p>
 
-<h2>1. 5080 上的实测结果</h2>
-<p>所有版本的计算代码和 tile 尺寸完全一样，只有“谁搬数据、怎么同步”不同。结果都和 cuBLAS 逐元素比对过。</p>
-<div class="tabs" id="sizeTabs"></div>
+<h2>1. 例子：有哪些数据，怎么取</h2>
+<p>要算的是 <code>C = A·Bᵀ</code>，也就是 <code>C[m][n] = Σ<sub>k</sub> A[m][k] · B[n][k]</code>。A、B、C 都是 4096×4096，A 和 B 是 FP16，C 是 FP32。任务这样拆：</p>
+<ul>
+  <li><b>按输出拆。</b>C 切成 32×32 个 128×128 的 tile，每个 tile 交给一个 CTA，1024 个 CTA 同时运行。</li>
+  <li><b>按 K 拆。</b>求和的 4096 项切成 64 段，每段 64 列，叫一个 <b>k-tile</b>。CTA 每次取一段，算完累加，再取下一段。</li>
+</ul>
+<p>下面跟踪其中一个 CTA：它负责 C 的第 256–383 行、第 640–767 列，所以要读 A 的第 256–383 行和 B 的第 640–767 行。拖动滑块，看它处理到第几个 k-tile。</p>
+<div class="ctl">
+  <button class="act" id="exPlay">播放</button>
+  <input type="range" id="exKt" min="0" max="63" value="17">
+  <span id="exLabel"></span>
+</div>
+<div class="mats">
+  <figure><div id="matA"></div><figcaption><b>A</b>：4096 行 × 4096 列。每个小格是 128 行 × 64 列，正好是 TMA 一次搬的一块（16 KB）。加粗的一行是这个 CTA 要读的 128 行。</figcaption></figure>
+  <figure><div id="matB"></div><figcaption><b>B</b>：同样大小。这个 CTA 读第 640–767 行，k-tile 的位置和 A 对齐。</figcaption></figure>
+  <figure><div id="matC"></div><figcaption><b>C</b>：每个小格是一个 128×128 的输出 tile。颜色越深，累加完成得越多。</figcaption></figure>
+</div>
+<div class="legend">
+  <span><i style="background:var(--comp);opacity:.45"></i>已经算完</span>
+  <span><i style="background:var(--comp)"></i>正在算</span>
+  <span><i style="background:var(--load)"></i>已发出搬运，在 shared memory 里或在路上</span>
+  <span><i style="border:1px solid var(--muted)"></i>还在显存</span>
+</div>
+<h3 style="margin-top:20px">放大看：这个 CTA 要处理的 64 个 k-tile</h3>
+<p class="small">这是上图加粗那一行的放大。A 和 B 的 k-tile 位置相同，所以只画一条。点任意一格可以跳过去。</p>
+<div class="kstrip" id="kstrip"></div>
+<div class="small kticks"><span>k-tile 0</span><span>16</span><span>32</span><span>48</span><span>63</span></div>
+<h3 style="margin-top:20px">怎么算：一个 k-tile 做 4 次矩阵乘</h3>
+<p>取回来的 A 块和 B 块各有 64 列。矩阵乘指令一次处理 16 列，所以每个 k-tile 要做 4 次，每次的结果都累加到同一个 C 块上。三个方框按实际比例画。</p>
+<div class="ctl"><span>这个 k-tile 里的第几次：</span><div class="tabs" id="subTabs"></div></div>
+<div class="mul">
+  <figure><div class="mbox" id="mulA" style="width:80px;height:160px"></div>A 块<br>128 行 × 64 列</figure>
+  <span class="op">×</span>
+  <figure><div class="mbox rows" id="mulB" style="width:160px;height:80px"></div>B 块转置<br>64 行 × 128 列</figure>
+  <span class="op">累加到 →</span>
+  <figure><div class="mbox" id="mulC" style="width:160px;height:160px"></div>C 块<br>128 × 128</figure>
+</div>
+<p id="mulText"></p>
+<div class="grid g2" style="margin-top:14px">
+  <div class="card"><h3>这一步用到的数据</h3><div id="exData"></div></div>
+  <div class="card"><h3>shared memory 里的 3 块缓冲 <span>每块放一个 k-tile 的 A 和 B，32 KB</span></h3>
+    <div class="slots" id="exSlots"></div>
+    <p class="small">缓冲循环使用：第 kt 个 k-tile 放进第 <code>kt % 3</code> 块。算当前这块时，后两块已经在准备，这就是流水（第 4 节）。</p></div>
+</div>
+<h3 style="margin-top:18px">怎么取：TMA</h3>
+<p>主机端先用一个 tensor map 告诉 TMA 张量有多大、一次搬多大一块。设备端只要给出这一块左上角的坐标，一个线程发一条指令，硬件就把整块搬进 shared memory，搬完自动通知 mbarrier。</p>
+<pre id="exCode"></pre>
+
+<h2>2. Warp specialization 是怎么构造的</h2>
+<p>WS 没有新的语法，就是在 kernel 里按线程编号分支，让不同的 warp 走不同的循环。关键是两样东西：</p>
+<ul>
+  <li><b>角色。</b><code>if (warp == …)</code> 把线程分成 producer（搬数据）和 consumer（计算）。B200 上再多分出“发指令”和“写回”。</li>
+  <li><b>一对信号。</b>每块缓冲配两个 mbarrier：<code>full[s]</code> 由搬运方发给计算方，意思是“第 s 块数据到齐了”；<code>empty[s]</code> 反过来，意思是“第 s 块用完了，可以覆盖”。</li>
+</ul>
+<p>切换架构，看同一个 CTA 里每个线程的角色，以及对应的代码。每一行是一个 warp 的 32 个线程。</p>
+<div class="tabs" id="archTabsA"></div>
 <div class="card">
-  <div id="bars"></div>
-  <div class="steps" id="steps"></div>
-</div>
-<p class="small">单位 TFLOPS，越高越好。“WS，但用 cp.async 搬”比不分工还慢：让 1 个 warp 发出整个 tile 的拷贝指令，指令数反而更多，所以 WS 要和 TMA 一起用。
-“不重叠 ×2 block”是每个 SM 上同时驻留两个 block，一个搬时另一个算，等于 block 之间互相掩盖。</p>
-
-<h2>2. 5080 的结果能说明什么，不能说明什么</h2>
-<p>5080 只支持 WS 所需部件的一部分。第 1 节的 +6.5% 测到的是<b>三种架构共有的那部分机制</b>：producer 用 TMA 搬数据，用 mbarrier 握手取代全体同步。
-H100 和 B200 上 WS 更主要的价值来自异步矩阵乘和 TMEM，5080 没有这些，所以这个数字只能当作下限，不能代表后两者。</p>
-<table>
-  <tr><th style="width:19%">WS 用到的部件</th><th style="width:25%">它让 WS 多做到什么</th><th>5080（sm_120）</th><th style="width:13%">H100（sm_90a）</th><th style="width:15%">B200（sm_100a）</th></tr>
-  <tr><td>TMA + mbarrier</td><td>1 个线程搬数据；一对一握手，不用全体同步</td><td><span class="yes">有</span>（已运行）</td><td><span class="yes">有</span></td><td><span class="yes">有</span></td></tr>
-  <tr><td><code>setmaxnreg</code></td><td>producer 把寄存器让给 consumer</td><td><span class="yes">有</span>，要按 sm_120a 编译（已运行）</td><td><span class="yes">有</span></td><td>不需要</td></tr>
-  <tr><td>thread block cluster</td><td>相邻 CTA 协作，共享一次加载</td><td><span class="yes">有</span>：2 个 CTA 的 cluster 能启动；TMA 广播没测</td><td><span class="yes">有</span></td><td><span class="yes">有</span></td></tr>
-  <tr><td>异步矩阵乘</td><td>consumer 发完指令就空出来，能和别的工作重叠</td><td><span class="no">没有</span>：只有同步的 <code>mma.sync</code>，编译器拒绝 <code>wgmma</code> 和 <code>tcgen05</code></td><td><span class="yes">有</span>：<code>wgmma</code></td><td><span class="yes">有</span>：<code>tcgen05</code>（不再接受 <code>wgmma</code>）</td></tr>
-  <tr><td>操作数直接从 shared memory 读</td><td>省掉 <code>ldmatrix</code>，指令数降两个数量级</td><td><span class="no">没有</span></td><td><span class="yes">有</span></td><td><span class="yes">有</span></td></tr>
-  <tr><td>累加器不占寄存器</td><td>发指令和写回可以交给不同的线程</td><td><span class="no">没有</span></td><td><span class="no">没有</span></td><td><span class="yes">有</span>：TMEM</td></tr>
-  <tr><td>每个 CTA 的 shared memory</td><td>决定能放几级流水</td><td>99 KB，本例 3 级</td><td>227 KB</td><td>227 KB</td></tr>
-</table>
-<p class="small">5080 一列是本机运行或编译探测的结果。H100、B200 两列里，指令是否被接受来自本机编译器，shared memory 大小来自 CUTLASS 的常量，cluster 一行来自公开资料；都没有在真机上验证。</p>
-<div class="grid g3" style="margin-top:14px">
-  <div class="card"><h3>为什么 5080 上的数字偏小</h3>
-    <ul>
-      <li><b>计算线程仍被同步指令占着。</b>每个 k-tile 的 192 条 <code>ldmatrix</code> 和 512 条 <code>mma.sync</code> 一条不少，WS 只省掉了搬数据和全体同步那部分。</li>
-      <li><b>硬件上限低，可回收的空间小。</b>最好的版本和 cuBLAS 都停在约 110 TFLOPS，Tensor Core 利用率约 48%。在 4096 和 8192 规模下，不分工的 TMA 版本已经达到 cuBLAS 的 92%～94%。</li>
-      <li><b>流水只能放 3 级。</b>shared memory 不到 H100 的一半。</li>
-    </ul></div>
-  <div class="card"><h3>它能说明的</h3>
-    <ul>
-      <li>共有的机制确实有效：等全体同步的 warp 数从 1.72 降到 0.01，速度 +6.5%。</li>
-      <li>WS 必须配合 TMA：用 <code>cp.async</code> 搬的 WS 比不分工还略慢（最多约 1%）。</li>
-      <li><code>setmaxnreg</code> 确实能把寄存器让出来：大 tile 上 +3%～9%。</li>
-    </ul></div>
-  <div class="card"><h3>它不能说明的</h3>
-    <ul>
-      <li>H100 上异步 <code>wgmma</code> 带来的收益，包括两组 warpgroup 交替做矩阵乘和其他计算。</li>
-      <li>B200 上搬、发指令、写回三个角色分工的收益。</li>
-      <li>多个 CTA 共享一次加载的收益。</li>
-    </ul></div>
-</div>
-
-<h2>3. 三个设计理念</h2>
-<div class="grid g3">
-  <div class="card">
-    <h3>TMA：搬数据交给硬件</h3>
-    <dl>
-      <dt>要解决的问题</dt>
-      <dd>以前每个线程自己算地址、发 <code>cp.async</code>。搬一个 tile 要上百条指令，占用的正是本该去计算的线程。</dd>
-      <dt>做法</dt>
-      <dd>主机端用 tensor map 描述张量的形状和布局；设备端 1 个线程给出坐标，硬件完成地址计算、swizzle 和拷贝，写完后自动通知 mbarrier。</dd>
-      <dt>预期效果</dt>
-      <dd>指令数下降；搬数据不再占用计算线程；1 个线程就能当 producer，这是 WS 的前提。</dd>
-      <dt>证据 <span class="badge b-meas">5080 实测</span></dt>
-      <dd>4096 规模下执行的指令数：不分工 148.6M → 122.0M；WS 下 178.1M → 113.3M。速度 +4%。</dd>
-    </dl>
-  </div>
-  <div class="card">
-    <h3>MMA：一条指令算更大的块</h3>
-    <dl>
-      <dt>要解决的问题</dt>
-      <dd><code>mma.sync</code> 一次只算 16×8×16，操作数要先用 <code>ldmatrix</code> 读进寄存器，累加器也占寄存器。Tensor Core 变快后，发指令本身成了开销。</dd>
-      <dt>做法</dt>
-      <dd>H100 的 <code>wgmma</code>：4 个 warp 合发一条 64×N×16 的异步指令，操作数用描述符直接从 shared memory 读。
-      B200 的 <code>tcgen05</code>：1 个线程发指令，累加器放进专用的 TMEM。</dd>
-      <dt>预期效果</dt>
-      <dd>指令数降两个数量级；线程发完指令就空出来；寄存器压力逐代下降。</dd>
-      <dt>证据 <span class="badge b-asm">编译 + 反汇编</span></dt>
-      <dd>每个 k-tile 的指令数 704 → 8 → 4，每线程寄存器 132 / 168 / 70。H100、B200 的速度没有测过。</dd>
-    </dl>
-  </div>
-  <div class="card">
-    <h3>WS：搬和算分开，各干各的</h3>
-    <dl>
-      <dt>要解决的问题</dt>
-      <dd>所有 warp 干同样的事时，每个 k-tile 都要全体同步一次，最慢的 warp 拖住整个 block；每个 warp 还都背着搬和算两套开销。</dd>
-      <dt>做法</dt>
-      <dd>producer 只搬，consumer 只算。每块缓冲配一对 mbarrier：<code>full</code>（数据到了）和 <code>empty</code>（用完了），一对一握手，取代全体同步。
-      <code>setmaxnreg</code> 把 producer 用不到的寄存器让给 consumer。</dd>
-      <dt>预期效果</dt>
-      <dd>搬和算持续重叠，Tensor Core 少空转；没有 block 级同步；对访存延迟更不敏感。</dd>
-      <dt>证据 <span class="badge b-meas">5080 实测</span></dt>
-      <dd>速度 +6.5%；等同步的 warp 数 1.72 → 0.01；Tensor Core 利用率 45.1% → 48.5%。<code>setmaxnreg</code> 在大 tile 上再 +3%～9%。这是下限，见第 2 节。</dd>
-    </dl>
-  </div>
-</div>
-
-<h2>4. 时间线：搬和算是怎么重叠的</h2>
-<p>切换下面四种做法，看同样 3 个 k-tile 的执行过程。<b>这是示意图，块的长度不是实测比例</b>，实测差距见第 1 节。</p>
-<div class="tabs" id="modeTabs"></div>
-<div class="card">
-  <h3 id="modeTitle"></h3>
-  <p id="modeNote" class="small"></p>
-  <div id="lanes"></div>
+  <div id="tmap"></div>
   <div class="legend">
-    <span><i style="background:var(--load)"></i>搬数据</span>
+    <span><i style="background:var(--load)"></i>搬数据（发 TMA）</span>
     <span><i style="background:var(--comp)"></i>计算</span>
-    <span><i style="background:var(--sync)"></i>全体同步</span>
-    <span><i style="background:var(--issue)"></i>发指令</span>
+    <span><i style="background:var(--issue)"></i>只发矩阵乘指令</span>
     <span><i style="background:var(--epi)"></i>写回结果</span>
     <span><i style="background:var(--idle)"></i>空闲</span>
   </div>
+  <pre class="code" id="skel"></pre>
+  <p class="small">代码有删节，左边的颜色和上面的线程图对应。完整版见文末的源码链接。</p>
 </div>
 
-<h2>5. 同一个 tile，在三种架构上怎么算</h2>
-<p>例子：一个 CTA 负责输出 C 的一个 128×128 tile。每个 k-tile 读入 A 的 128×64 和 B 的 128×64（各 16 KB），K 方向每 16 列做一次矩阵乘。
-先看一条矩阵乘指令能覆盖这个 tile 的多大一块：</p>
-<div class="grid g3" id="tiles"></div>
-<p style="margin-top:18px">再一步步看一个 k-tile 是怎么算完的。高亮的方框是这一步数据所在的位置，绿色边框是累加器；方框下面一排是各个角色此刻的状态。</p>
-<div class="tabs" id="archTabs"></div>
+<h2>3. 一个 k-tile 是怎么算完的</h2>
+<p>一步步看一个 k-tile 从显存到结果的过程。高亮的方框是这一步数据所在的位置，绿色边框是累加器；方框下面一排是各个角色此刻的状态。</p>
+<div class="tabs" id="archTabsB"></div>
 <div class="card">
   <div class="path" id="flow"></div>
   <div class="actors" id="actors"></div>
@@ -241,41 +244,165 @@ H100 和 B200 上 WS 更主要的价值来自异步矩阵乘和 TMEM，5080 没�
   <p id="stepDesc"></p>
   <pre id="stepCode"></pre>
 </div>
-<h3 style="margin-top:22px">差别小结</h3>
-<table>
+
+<h2>4. 流水掩盖：怎么实现，有什么效果</h2>
+<p>从显存取一块数据要等一段时间（访存延迟）。如果取一块、算一块，Tensor Core 就要在每次取数据时空等。流水的做法是<b>多准备几块缓冲，提前把后面的数据取回来</b>：
+算第 kt 块时，第 kt+1、kt+2 块已经在路上。只要数据到达得比计算消耗得快，延迟就被“掩盖”了，Tensor Core 感觉不到。</p>
+<p>实现上就是第 2 节那两个循环加一对信号：producer 一看到 <code>empty[s]</code> 就发下一次搬运，不等数据回来；consumer 只等 <code>full[s]</code>。下面的模拟器按这个规则推演 12 个 k-tile，可以调访存延迟和缓冲块数。</p>
+<div class="ctl">
+  <div class="tabs" id="simMode"></div>
+  <span id="simSwrap">缓冲块数 <span class="tabs" id="simS" style="display:inline-flex;margin:0 0 0 6px"></span></span>
+</div>
+<div class="ctl">
+  <label>访存延迟 <input type="range" id="simL" min="0.25" max="4" step="0.25" value="1.5"></label>
+  <span id="simLval"></span>
+</div>
+<div class="card">
+  <div class="metrics" id="simMetrics"></div>
+  <div class="rule" id="simRule"></div>
+  <div class="ctl">
+    <button class="act" id="simPlay">播放</button>
+    <input type="range" id="simT" min="0" max="1000" value="400" style="flex:1;min-width:200px">
+    <span id="simTval" class="small"></span>
+  </div>
+  <div class="slots" id="simSlots" style="margin-bottom:12px"></div>
+  <div id="simLanes"></div>
+  <div class="legend">
+    <span><i style="background:var(--load)"></i>数据在路上</span>
+    <span><i style="background:var(--ready)"></i>已到齐，等着用</span>
+    <span><i style="background:var(--comp)"></i>计算</span>
+    <span><i style="background:var(--sync)"></i>全体同步 + 发拷贝指令</span>
+    <span><i style="background:var(--issue)"></i>发 TMA</span>
+    <span><i style="background:var(--idle)"></i>空闲</span>
+  </div>
+  <h3 style="margin-top:18px">同样的延迟下，三种做法算完 12 个 k-tile 的总时间</h3>
+  <div id="simCmp"></div>
+</div>
+<p class="small">这是一个简化模型，不是测量：时间以“算一个 k-tile”为 1；假设多块数据可以同时在路上，互不抢带宽；不分工时每个 k-tile 多花 0.07 做全体同步和发拷贝指令，这个数参考了 5080 上的实测差距。</p>
+<h3 style="margin-top:18px">实际的效果</h3>
+<ul>
+  <li><b>5080 实测（4096 规模）：</b>不重叠 75.5 TFLOPS，多级流水 92.3，再加 TMA 和 WS 到 102.2。重叠本身带来的提升最大（+22%）。</li>
+  <li><b>H200 仿真（Accel-Sim）：</b>把访存延迟加倍，用了 WS 的 FP8 矩阵乘变慢 16%～23%，没用 WS 的同类 kernel 变慢 33%～37%。两者不是同一个 kernel，只能说明方向。</li>
+</ul>
+
+<h2>5. 三种架构的差别</h2>
+<p>同一个 128×128 的输出 tile，一条矩阵乘指令能覆盖多大一块：</p>
+<div class="grid g3" id="tiles"></div>
+<table style="margin-top:16px">
   <tr><th style="width:22%"></th><th>5080（sm_120）</th><th>H100（sm_90a）</th><th>B200（sm_100a）</th></tr>
-  <tr><td>一条矩阵乘指令算多大</td><td>16×8×16</td><td>64×128×16</td><td>128×128×16</td></tr>
-  <tr><td>K 每推进 16 要发几条</td><td>128 条（8 个 warp × 16）</td><td>2 条</td><td>1 条</td></tr>
+  <tr><td>矩阵乘指令</td><td><code>mma.sync</code>，同步</td><td><code>wgmma</code>，异步</td><td><code>tcgen05.mma</code>，异步</td></tr>
+  <tr><td>一条指令算多大</td><td>16×8×16</td><td>64×128×16</td><td>128×128×16</td></tr>
   <tr><td>每个 k-tile 的指令</td><td>192 条 LDSM + 512 条 HMMA</td><td>8 条 HGMMA</td><td>4 条 UTCHMMA</td></tr>
   <tr><td>操作数怎么到 Tensor Core</td><td>shared memory → 寄存器 → Tensor Core</td><td>shared memory → Tensor Core</td><td>shared memory → Tensor Core</td></tr>
   <tr><td>矩阵乘期间，发指令的线程</td><td>被占用，算完才能继续</td><td>空出来，但累加器还在它的寄存器里</td><td>不等结果，直接处理下一块</td></tr>
-  <tr><td>累加器在哪</td><td>每个计算 warp 的寄存器</td><td>warpgroup 的寄存器</td><td>TMEM</td></tr>
+  <tr><td>累加器在哪</td><td>每个计算 warp 的寄存器</td><td>warpgroup 的寄存器</td><td>TMEM（专用的张量内存）</td></tr>
   <tr><td>每线程寄存器（编译结果）</td><td>132</td><td>168，计算线程可借到 232</td><td>70</td></tr>
   <tr><td>谁归还缓冲</td><td>每个计算 warp 自己 arrive</td><td>每个计算 warp 等矩阵乘完成后 arrive</td><td>硬件，在矩阵乘完成时自动通知</td></tr>
   <tr><td>谁写回结果</td><td>计算的 warp 自己</td><td>计算的 warpgroup 自己</td><td>另外 4 个 epilogue warp</td></tr>
   <tr><td>WS 的角色</td><td>搬 / 算</td><td>搬 / 算，加寄存器重分配</td><td>搬 / 发指令 / 写回</td></tr>
   <tr><td>WS 的地位</td><td>可选的优化</td><td>高性能 kernel 的标准写法</td><td>结构上必需：发指令和写回的线程天然分开</td></tr>
 </table>
-<p class="small">指令条数和寄存器数来自本机 CUDA 12.9 编译后的汇编。5080 的过程实际运行过；H100、B200 的过程按源码和汇编描述，没有在真机上运行。</p>
+<p class="small">指令条数和寄存器数来自本机 CUDA 12.9 编译后的汇编。5080 的版本实际运行过；H100、B200 的版本只编译过，过程按源码和汇编描述，没有在真机上运行。</p>
 
-<h2>6. 哪些是测出来的，哪些不是</h2>
+<h2>6. 设计理念小结</h2>
+<div class="grid g3">
+  <div class="card">
+    <h3>TMA：搬数据交给硬件</h3>
+    <dl>
+      <dt>要解决的问题</dt>
+      <dd>以前每个线程自己算地址、发 <code>cp.async</code>。搬一个 tile 要上百条指令，占用的正是本该去计算的线程。</dd>
+      <dt>做法</dt>
+      <dd>主机端用 tensor map 描述张量；设备端 1 个线程给出坐标，硬件完成地址计算、swizzle 和拷贝，写完后自动通知 mbarrier。</dd>
+      <dt>预期效果</dt>
+      <dd>指令数下降；搬数据不再占用计算线程；1 个线程就能当 producer，这是 WS 的前提。</dd>
+    </dl>
+  </div>
+  <div class="card">
+    <h3>MMA：一条指令算更大的块</h3>
+    <dl>
+      <dt>要解决的问题</dt>
+      <dd><code>mma.sync</code> 一次只算 16×8×16，操作数要先读进寄存器，累加器也占寄存器。Tensor Core 变快后，发指令本身成了开销。</dd>
+      <dt>做法</dt>
+      <dd>H100 的 <code>wgmma</code>：4 个 warp 合发一条异步指令，操作数直接从 shared memory 读。B200 的 <code>tcgen05</code>：1 个线程发指令，累加器放进 TMEM。</dd>
+      <dt>预期效果</dt>
+      <dd>指令数降两个数量级；线程发完指令就空出来；寄存器压力逐代下降。</dd>
+    </dl>
+  </div>
+  <div class="card">
+    <h3>WS：搬和算分开，各干各的</h3>
+    <dl>
+      <dt>要解决的问题</dt>
+      <dd>所有 warp 干同样的事时，每个 k-tile 都要全体同步一次，最慢的 warp 拖住整个 CTA；每个 warp 还都背着搬和算两套开销。</dd>
+      <dt>做法</dt>
+      <dd>producer 只搬，consumer 只算，用 <code>full</code> / <code>empty</code> 一对信号握手。<code>setmaxnreg</code> 把 producer 用不到的寄存器让给 consumer。</dd>
+      <dt>预期效果</dt>
+      <dd>搬和算持续重叠，Tensor Core 少空转；没有 CTA 级的同步；对访存延迟更不敏感。</dd>
+    </dl>
+  </div>
+</div>
+
+<h2>7. 实测参考：RTX 5080</h2>
+<p>本机只有 5080，下面是它的实测数据。<b>5080 只支持 WS 所需部件的一部分</b>，测到的是三种架构共有的那部分机制（TMA 搬数据、mbarrier 握手），只能当作下限，不能代表 H100 和 B200。</p>
+<table>
+  <tr><th style="width:19%">WS 用到的部件</th><th style="width:25%">它让 WS 多做到什么</th><th>5080（sm_120）</th><th style="width:13%">H100（sm_90a）</th><th style="width:15%">B200（sm_100a）</th></tr>
+  <tr><td>TMA + mbarrier</td><td>1 个线程搬数据；一对一握手，不用全体同步</td><td><span class="yes">有</span>（已运行）</td><td><span class="yes">有</span></td><td><span class="yes">有</span></td></tr>
+  <tr><td><code>setmaxnreg</code></td><td>producer 把寄存器让给 consumer</td><td><span class="yes">有</span>，要按 sm_120a 编译（已运行）</td><td><span class="yes">有</span></td><td>不需要</td></tr>
+  <tr><td>thread block cluster</td><td>相邻 CTA 协作，共享一次加载</td><td><span class="yes">有</span>：2 个 CTA 的 cluster 能启动；TMA 广播没测</td><td><span class="yes">有</span></td><td><span class="yes">有</span></td></tr>
+  <tr><td>异步矩阵乘</td><td>consumer 发完指令就空出来，能和别的工作重叠</td><td><span class="no">没有</span>：只有同步的 <code>mma.sync</code>，编译器拒绝 <code>wgmma</code> 和 <code>tcgen05</code></td><td><span class="yes">有</span>：<code>wgmma</code></td><td><span class="yes">有</span>：<code>tcgen05</code>（不再接受 <code>wgmma</code>）</td></tr>
+  <tr><td>操作数直接从 shared memory 读</td><td>省掉 <code>ldmatrix</code>，指令数降两个数量级</td><td><span class="no">没有</span></td><td><span class="yes">有</span></td><td><span class="yes">有</span></td></tr>
+  <tr><td>累加器不占寄存器</td><td>发指令和写回可以交给不同的线程</td><td><span class="no">没有</span></td><td><span class="no">没有</span></td><td><span class="yes">有</span>：TMEM</td></tr>
+  <tr><td>每个 CTA 的 shared memory</td><td>决定能放几块缓冲</td><td>99 KB，本例 3 块</td><td>227 KB</td><td>227 KB</td></tr>
+</table>
+<p class="small">5080 一列是本机运行或编译探测的结果。H100、B200 两列里，指令是否被接受来自本机编译器，shared memory 大小来自 CUTLASS 的常量，cluster 一行来自公开资料；都没有在真机上验证。</p>
+
+<h3 style="margin-top:20px">各种做法的速度</h3>
+<p>所有版本的计算代码和 tile 尺寸完全一样，只有“谁搬数据、怎么同步”不同。结果都和 cuBLAS 逐元素比对过。</p>
+<div class="tabs" id="sizeTabs"></div>
+<div class="card">
+  <div id="bars"></div>
+  <div class="steps" id="steps"></div>
+</div>
+<p class="small">单位 TFLOPS，越高越好。“WS，但用 cp.async 搬”比不分工还略慢：让 1 个 warp 发出整个 tile 的拷贝指令，指令数反而更多，所以 WS 要和 TMA 一起用。
+“不重叠 ×2 block”是每个 SM 上同时驻留两个 CTA，一个搬时另一个算，等于 CTA 之间互相掩盖。</p>
+<div class="grid g3" style="margin-top:14px">
+  <div class="card"><h3>为什么 5080 上的数字偏小</h3>
+    <ul>
+      <li><b>计算线程仍被同步指令占着。</b>每个 k-tile 的 192 条 <code>ldmatrix</code> 和 512 条 <code>mma.sync</code> 一条不少，WS 只省掉了搬数据和全体同步那部分。</li>
+      <li><b>硬件上限低，可回收的空间小。</b>最好的版本和 cuBLAS 都停在约 110 TFLOPS。在 4096 和 8192 规模下，不分工的 TMA 版本已经达到 cuBLAS 的 92%～94%。</li>
+      <li><b>缓冲只能放 3 块。</b>shared memory 不到 H100 的一半。</li>
+    </ul></div>
+  <div class="card"><h3>它能说明的</h3>
+    <ul>
+      <li>共有的机制确实有效：等全体同步的 warp 数从 1.72 降到 0.01，速度 +6.5%。</li>
+      <li>WS 必须配合 TMA：用 <code>cp.async</code> 搬的 WS 比不分工还略慢（最多约 1%）。</li>
+      <li><code>setmaxnreg</code> 确实能把寄存器让出来：大 tile 上 +3%～9%。</li>
+    </ul></div>
+  <div class="card"><h3>它不能说明的</h3>
+    <ul>
+      <li>H100 上异步 <code>wgmma</code> 带来的收益，包括两组 warpgroup 交替做矩阵乘和其他计算。</li>
+      <li>B200 上搬、发指令、写回三个角色分工的收益。</li>
+      <li>多个 CTA 共享一次加载的收益。</li>
+    </ul></div>
+</div>
+
+<h2>8. 哪些是测出来的，哪些不是</h2>
 <table>
   <tr><th style="width:38%">结论</th><th style="width:16%">依据</th><th>说明</th></tr>
-  <tr><td>5080 支持哪些 WS 部件</td><td><span class="badge b-meas">实测</span></td><td>TMA、mbarrier、<code>setmaxnreg</code> 实际运行过；2 个 CTA 的 cluster 能启动；<code>wgmma</code>、<code>tcgen05</code> 被编译器拒绝。</td></tr>
   <tr><td>5080 上各版本的速度和增量</td><td><span class="badge b-meas">实测</span></td><td>同一 kernel 只改搬运和同步方式；结果逐元素对过 cuBLAS。</td></tr>
-  <tr><td>5080 上的指令数、同步停顿、Tensor Core 利用率</td><td><span class="badge b-meas">实测</span></td><td>Nsight Compute，4096 规模。采集时 TMA 的写法还没改成最终版，数值可能略有出入。</td></tr>
+  <tr><td>5080 支持哪些 WS 部件</td><td><span class="badge b-meas">实测</span></td><td>TMA、mbarrier、<code>setmaxnreg</code> 实际运行过；2 个 CTA 的 cluster 能启动；<code>wgmma</code>、<code>tcgen05</code> 被编译器拒绝。</td></tr>
+  <tr><td>5080 上的同步停顿、Tensor Core 利用率</td><td><span class="badge b-meas">实测</span></td><td>Nsight Compute，4096 规模。采集时 TMA 的写法还没改成最终版，数值可能略有出入。</td></tr>
   <tr><td>三种架构的指令条数、寄存器数</td><td><span class="badge b-asm">编译 + 反汇编</span></td><td>本机 CUDA 12.9 编译三个目标后用 cuobjdump 统计。</td></tr>
   <tr><td>H100、B200 用例能算对、能跑多快</td><td><span class="badge b-none">未验证</span></td><td>本机只有 5080，这两份代码没有运行过。描述符编码照 CUTLASS 和 DeepGEMM 写。</td></tr>
-  <tr><td>H200 上 WS 更能掩盖访存延迟</td><td><span class="badge b-sim">仿真，旁证</span></td><td>Accel-Sim 里把 DRAM 延迟加倍：非 WS 的 kernel 慢 33%～37%，WS 的 FP8 GEMM 慢 16%～23%。
-    但两者不是同一个 kernel，仿真误差 1%～29%，只能说明方向。</td></tr>
+  <tr><td>第 4 节的流水模拟器</td><td><span class="badge b-none">简化模型</span></td><td>按 kernel 里的握手规则推演，用来说明原理，不是测量结果。</td></tr>
+  <tr><td>H200 上 WS 更能掩盖访存延迟</td><td><span class="badge b-sim">仿真，旁证</span></td><td>Accel-Sim 里把访存延迟加倍后比较变慢的幅度。两个 kernel 不是同一个，仿真误差 1%～29%，只能说明方向。</td></tr>
   <tr><td><code>setmaxnreg</code> 在 H100 上的收益</td><td><span class="badge b-none">无数据</span></td><td>模拟器把它当空操作；5080 上实测大 tile +3%～9%。</td></tr>
 </table>
 
-<h2>7. 复现</h2>
+<h2>9. 复现</h2>
 <pre># 在仓库根目录下，需要 CUDA 12.8 及以上
 bash build.sh                  # 编译全部用例，并导出三份汇编到 arch/*.sass
-./ws_gemm                      # 第 1 节的全部对比（RTX 50 系列）
-./arch/sm120_5080 4096         # 第 5 节 5080 版本；sm90_h100、sm100_b200 需要对应的卡</pre>
+./ws_gemm                      # 第 7 节的全部对比（RTX 50 系列）
+./arch/sm120_5080 4096         # 5080 版本；sm90_h100、sm100_b200 需要对应的卡</pre>
 <p class="small">源码：<a href="ws_gemm.cu"><code>ws_gemm.cu</code></a>（各种搬运/同步方式的对比）、
 <a href="arch/common.h"><code>arch/common.h</code></a>、<a href="arch/sm120_5080.cu"><code>arch/sm120_5080.cu</code></a>、
 <a href="arch/sm90_h100.cu"><code>arch/sm90_h100.cu</code></a>、<a href="arch/sm100_b200.cu"><code>arch/sm100_b200.cu</code></a>（三种架构的同一 kernel）；
@@ -284,118 +411,130 @@ bash build.sh                  # 编译全部用例，并导出三份汇编到 a
 
 </main>
 <script>
-const perf = {
-  sizes: ['2048', '4096', '8192'],
-  rows: [
-    { k: 'sync1',  name: '不重叠（先搬完再算）',              v: [61.15, 75.46, 75.97] },
-    { k: 'sync2',  name: '不重叠 ×2 block（block 间互相掩盖）', v: [73.29, 93.26, 103.99] },
-    { k: 'multi',  name: '多级流水，cp.async，不分工',          v: [73.02, 92.26, 99.09] },
-    { k: 'mtma',   name: '多级流水 + TMA，不分工',             v: [75.60, 96.02, 103.48] },
-    { k: 'wscp',   name: 'WS，但用 cp.async 搬',               v: [72.32, 91.34, 98.68] },
-    { k: 'wstma',  name: 'WS + TMA',                           v: [80.48, 102.22, 110.40], cls: 'hl' },
-    { k: 'cublas', name: 'cuBLAS（参考）',                      v: [89.23, 104.50, 109.77], cls: 'ref' }
-  ]
+const $ = id => document.getElementById(id);
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const markTabs = (id, idx) => [...$(id).children].forEach((b, i) => b.classList.toggle('on', i === idx));
+
+// ---------- 1. worked example: one CTA of a 4096^3 GEMM ----------
+const EX = { by: 2, bx: 5, kt: 17, sub: 0, timer: null };
+function matSvg(id, cols, rows, cw, ch) {
+  const w = cols * cw, h = rows * ch;
+  return `<svg viewBox="-1 -1 ${w + 2} ${h + 2}" width="${w + 2}" height="${h + 2}">` +
+    `<defs><pattern id="pat${id}" width="${cw}" height="${ch}" patternUnits="userSpaceOnUse">` +
+    `<path d="M${cw} 0H0V${ch}" fill="none" style="stroke:var(--line)" stroke-width="1"/></pattern></defs>` +
+    `<rect width="${w}" height="${h}" fill="url(#pat${id})" style="stroke:var(--muted)"/><g id="hl${id}"></g></svg>`;
+}
+$('matA').innerHTML = matSvg('A', 64, 32, 5, 6);
+$('matB').innerHTML = matSvg('B', 64, 32, 5, 6);
+$('matC').innerHTML = matSvg('C', 32, 32, 6, 6);
+function renderExample() {
+  const kt = EX.kt, k0 = kt * 64, m0 = EX.by * 128, n0 = EX.bx * 128, s = kt % 3, pre = Math.min(2, 63 - kt);
+  const strip = row =>
+    (kt ? `<rect x="0" y="${row * 6}" width="${kt * 5}" height="6" style="fill:var(--comp);opacity:.45"/>` : '') +
+    `<rect x="${kt * 5}" y="${row * 6}" width="5" height="6" style="fill:var(--comp)"/>` +
+    (pre ? `<rect x="${(kt + 1) * 5}" y="${row * 6}" width="${pre * 5}" height="6" style="fill:var(--load)"/>` : '') +
+    `<rect x="0" y="${row * 6}" width="320" height="6" fill="none" style="stroke:var(--ink)" stroke-width="1.5"/>`;
+  $('hlA').innerHTML = strip(EX.by);
+  $('hlB').innerHTML = strip(EX.bx);
+  $('hlC').innerHTML =
+    `<rect x="${EX.bx * 6}" y="${EX.by * 6}" width="6" height="6" style="fill:var(--comp);opacity:${(0.15 + 0.85 * (kt + 1) / 64).toFixed(2)}"/>` +
+    `<rect x="${EX.bx * 6}" y="${EX.by * 6}" width="6" height="6" fill="none" style="stroke:var(--ink)" stroke-width="1.5"/>`;
+  $('exLabel').textContent = `第 ${kt} 个 k-tile（共 64 个，编号 0–63）`;
+  $('kstrip').innerHTML = [...Array(64).keys()].map(i =>
+    `<i class="${i < kt ? 'done' : i === kt ? 'cur' : i <= kt + 2 ? 'pre' : ''}" title="k-tile ${i}" onclick="setKt(${i})"></i>`).join('');
+  const j = EX.sub, band = i => `<div class="band ${i < j ? 'done' : i === j ? 'cur' : 'pre'}"></div>`;
+  const er = 40, ec = 90;  // example element inside the tile
+  $('mulA').innerHTML = [0, 1, 2, 3].map(band).join('') + `<div class="hline" style="top:${er / 128 * 100}%"></div>`;
+  $('mulB').innerHTML = [0, 1, 2, 3].map(band).join('') + `<div class="vline" style="left:${ec / 128 * 100}%"></div>`;
+  $('mulC').innerHTML = `<div class="fill" style="opacity:${(0.1 + 0.9 * (kt * 4 + j + 1) / 256).toFixed(2)}"></div>` +
+    `<div class="dot" style="left:${ec / 128 * 100}%;top:${er / 128 * 100}%"></div>`;
+  const ka = k0 + 16 * j;
+  $('mulText').innerHTML = `<b>第 ${j + 1} 次</b>用第 ${ka}–${ka + 15} 列（深绿色的带）。C 块里的每个元素都加上 16 项乘积之和。` +
+    `以红点 <code>C[${m0 + er}][${n0 + ec}]</code> 为例：它加上 <code>A[${m0 + er}][k] × B[${n0 + ec}][k]</code>，k 取 ${ka} 到 ${ka + 15}，` +
+    `也就是 A 块里红线那一行和 B 块转置里红线那一列，在深绿色带内的部分。` +
+    `整个 C 块有 128×128 = 16384 个这样的元素，由 Tensor Core 一起算：5080 上要拆成 128 条指令，H100 上 2 条，B200 上 1 条（第 5 节）。`;
+  markTabs('subTabs', j);
+  $('exData').innerHTML =
+    `<p><b>A 块</b>：<code>A[${m0}:${m0 + 128}, ${k0}:${k0 + 64}]</code>，128 行 × 64 列，FP16，16 KB</p>` +
+    `<p><b>B 块</b>：<code>B[${n0}:${n0 + 128}, ${k0}:${k0 + 64}]</code>，同样大小</p>` +
+    `<p><b>计算</b>：<code>C[${m0}:${m0 + 128}, ${n0}:${n0 + 128}] += A块 · B块ᵀ</code></p>` +
+    `<p class="small">64 列分 4 次做，每次用 16 列：${[0, 1, 2, 3].map(j => `${k0 + 16 * j}–${k0 + 16 * j + 15}`).join('、')}。</p>`;
+  $('exSlots').innerHTML = [0, 1, 2].map(i => {
+    const j = [kt, kt + 1, kt + 2].find(x => x % 3 === i && x <= 63);
+    const st = j === undefined ? ['empty', '空'] : j === kt ? ['read', `k-tile ${j}：正在被计算读取`] : ['load', `k-tile ${j}：已发出搬运，等着用`];
+    return `<div class="slot ${st[0]}"><b>缓冲 ${i}</b>${st[1]}</div>`;
+  }).join('');
+  $('exCode').textContent =
+`// 主机端，只做一次：描述张量 A，以及一次搬多大一块（B 同理）
+cuTensorMapEncodeTiled(&tmA, FLOAT16, 2, A,
+    {4096, 4096},      // 张量大小：4096 列 × 4096 行
+    {4096 * 2},        // 相邻两行隔多少字节
+    {64, 128},         // 一次搬的块：64 列 × 128 行
+    ..., SWIZZLE_128B, ...);
+
+// 设备端：producer 线程为第 ${kt} 个 k-tile 发出的两条指令，目标是缓冲 ${kt} % 3 = ${s}
+//                              列坐标 x   行坐标 y
+tma_load_2d(sA[${s}], &tmA, ${String(k0).padStart(11)}, ${String(m0).padStart(9)}, full_bar[${s}]);   // A[${m0}:${m0 + 128}, ${k0}:${k0 + 64}] → shared memory
+tma_load_2d(sB[${s}], &tmB, ${String(k0).padStart(11)}, ${String(n0).padStart(9)}, full_bar[${s}]);   // B[${n0}:${n0 + 128}, ${k0}:${k0 + 64}] → shared memory
+// 两块共 32 KB 写完后，硬件让 full_bar[${s}] 完成`;
+}
+function setKt(i) { EX.kt = i; $('exKt').value = i; renderExample(); }
+function setSub(i) { EX.sub = i; renderExample(); }
+$('subTabs').innerHTML = [1, 2, 3, 4].map((n, i) => `<button onclick="setSub(${i})">第 ${n} 次</button>`).join('');
+$('exKt').oninput = e => { EX.kt = +e.target.value; renderExample(); };
+$('exPlay').onclick = () => {
+  if (EX.timer) { clearInterval(EX.timer); EX.timer = null; $('exPlay').textContent = '播放'; return; }
+  $('exPlay').textContent = '暂停';
+  EX.timer = setInterval(() => { EX.kt = (EX.kt + 1) % 64; $('exKt').value = EX.kt; renderExample(); }, 350);
 };
-const pct = (a, b) => ((a / b - 1) * 100);
-const fmtPct = x => (x >= 0 ? '+' : '') + x.toFixed(1) + '%';
+renderExample();
 
-function renderPerf(si) {
-  const max = 115;
-  document.getElementById('bars').innerHTML = perf.rows.map(r =>
-    `<div class="bar-row"><div class="name">${r.name}</div>` +
-    `<div class="bar-track"><div class="bar-fill ${r.cls || ''}" style="width:${(r.v[si] / max * 100).toFixed(1)}%"></div></div>` +
-    `<div class="val">${r.v[si].toFixed(1)}</div></div>`).join('');
-  const g = k => perf.rows.find(r => r.k === k).v[si];
-  const steps = [
-    ['让搬和算重叠', pct(g('multi'), g('sync1')), '不重叠 → 多级流水'],
-    ['换成 TMA', pct(g('mtma'), g('multi')), '多级流水 → 加 TMA'],
-    ['再做 WS', pct(g('wstma'), g('mtma')), '加 TMA → WS + TMA'],
-    ['对比 cuBLAS', pct(g('wstma'), g('cublas')), 'WS + TMA 相对 cuBLAS']
-  ];
-  document.getElementById('steps').innerHTML = steps.map(s =>
-    `<div class="step"><div class="small">${s[0]}</div><b>${fmtPct(s[1])}</b><div class="small">${s[2]}</div></div>`).join('');
-  [...document.getElementById('sizeTabs').children].forEach((b, i) => b.classList.toggle('on', i === si));
-}
-document.getElementById('sizeTabs').innerHTML = perf.sizes.map((s, i) =>
-  `<button onclick="renderPerf(${i})">${s}×${s}×${s}</button>`).join('');
-renderPerf(1);
-
-// [start, length, label, class]
-const T = 16.5;
-const modes = [
-  { tab: '不重叠', title: '不重叠：所有 warp 先搬完，再一起算',
-    note: '搬数据时 Tensor Core 空着，计算时访存空着。每个 k-tile 两次全体同步。',
-    lanes: [
-      ['全部 8 个 warp', [[0, 1.3, '搬 k0', 'load'], [1.3, 4, '算 k0', 'comp'], [5.3, 1.3, '搬 k1', 'load'], [6.6, 4, '算 k1', 'comp'], [10.6, 1.3, '搬 k2', 'load'], [11.9, 4, '算 k2', 'comp']]],
-      ['访存', [[0, 1.3, 'k0', 'load'], [5.3, 1.3, 'k1', 'load'], [10.6, 1.3, 'k2', 'load']]],
-      ['Tensor Core', [[1.3, 4, 'k0', 'comp'], [6.6, 4, 'k1', 'comp'], [11.9, 4, 'k2', 'comp']]]
-    ] },
-  { tab: '多级流水，不分工', title: '多级流水：提前两个 k-tile 预取，但每个 warp 既搬又算',
-    note: '搬和算重叠了。但每个 k-tile 开头仍要全体同步一次，再由所有 warp 发出下一批拷贝指令，这段时间 Tensor Core 是空的。',
-    lanes: [
-      ['全部 8 个 warp', [[0, .25, '', 'sync'], [.25, .35, '', 'issue'], [.6, 4, '算 k0', 'comp'], [4.6, .25, '', 'sync'], [4.85, .35, '', 'issue'], [5.2, 4, '算 k1', 'comp'], [9.2, .25, '', 'sync'], [9.45, .35, '', 'issue'], [9.8, 4, '算 k2', 'comp']]],
-      ['访存', [[.6, 1.6, '搬 k2', 'load'], [5.2, 1.6, '搬 k3', 'load'], [9.8, 1.6, '搬 k4', 'load']]],
-      ['Tensor Core', [[.6, 4, 'k0', 'comp'], [5.2, 4, 'k1', 'comp'], [9.8, 4, 'k2', 'comp']]]
-    ] },
-  { tab: 'WS：5080 / H100', title: 'WS 两个角色：producer 只搬，consumer 只算',
-    note: 'producer 等到一块缓冲空出来（empty）就发 TMA，然后马上去等下一块。consumer 只等自己要的数据到齐（full），不等别的 warp。没有全体同步。',
-    lanes: [
-      ['producer（1 个线程）', [[0, .15, '', 'issue'], [3.9, .15, '', 'issue'], [7.8, .15, '', 'issue']]],
-      ['TMA 硬件 + 访存', [[.15, 1.6, '搬 k2', 'load'], [4.05, 1.6, '搬 k3', 'load'], [7.95, 1.6, '搬 k4', 'load']]],
-      ['consumer（8 warp / 2 warpgroup）', [[0, 3.9, '算 k0', 'comp'], [3.9, 3.9, '算 k1', 'comp'], [7.8, 3.9, '算 k2', 'comp']]],
-      ['Tensor Core', [[0, 3.9, 'k0', 'comp'], [3.9, 3.9, 'k1', 'comp'], [7.8, 3.9, 'k2', 'comp']]]
-    ] },
-  { tab: 'WS：B200', title: 'WS 三个角色：搬、发指令、写回',
-    note: '发 MMA 的线程不碰数据，累加器留在 TMEM。写回由另外 4 个 warp 完成；在常驻式 kernel 里，上一个 tile 的写回可以和下一个 tile 的计算重叠（虚线块）。',
-    lanes: [
-      ['TMA 线程', [[0, .15, '', 'issue'], [3.9, .15, '', 'issue'], [7.8, .15, '', 'issue']]],
-      ['TMA 硬件 + 访存', [[.15, 1.6, '搬 k2', 'load'], [4.05, 1.6, '搬 k3', 'load'], [7.95, 1.6, '搬 k4', 'load']]],
-      ['MMA 线程（1 个线程）', [[0, .15, '', 'issue'], [3.9, .15, '', 'issue'], [7.8, .15, '', 'issue']]],
-      ['Tensor Core + TMEM', [[.15, 3.75, 'k0', 'comp'], [4.05, 3.75, 'k1', 'comp'], [7.95, 3.75, 'k2', 'comp']]],
-      ['epilogue（4 个 warp）', [[0, 1.8, '上一个 tile 写回', 'epi ghost'], [11.7, 1.8, '读 TMEM，写回 C', 'epi']]]
-    ] }
-];
-function renderMode(mi) {
-  const m = modes[mi];
-  document.getElementById('modeTitle').textContent = m.title;
-  document.getElementById('modeNote').textContent = m.note;
-  document.getElementById('lanes').innerHTML = m.lanes.map(l =>
-    `<div class="lane"><div class="lname">${l[0]}</div><div class="track">` +
-    l[1].map(b => `<div class="blk ${b[3]}" style="left:${(b[0] / T * 100).toFixed(2)}%;width:${(b[1] / T * 100).toFixed(2)}%">${b[2]}</div>`).join('') +
-    `</div></div>`).join('');
-  [...document.getElementById('modeTabs').children].forEach((b, i) => b.classList.toggle('on', i === mi));
-}
-document.getElementById('modeTabs').innerHTML = modes.map((m, i) =>
-  `<button onclick="renderMode(${i})">${m.tab}</button>`).join('');
-renderMode(0);
-
-// one MMA instruction's footprint on the 128x128 output tile (rows = M, 16 per cell; cols = N, 8 per cell)
-const warpColors = ['#4c9be8', '#22a06b', '#f5a524', '#8e6fd8', '#e5484d', '#12a4b5', '#c2569b', '#7c8a2e'];
-let cells5080 = '';
-for (let r = 0; r < 8; r++) for (let c = 0; c < 16; c++) cells5080 += `<div style="background:${warpColors[(r >> 2) * 4 + (c >> 2)]}"></div>`;
-const tiles = [
-  { h: '5080：mma.sync', tpl: 'repeat(8, 1fr) / repeat(16, 1fr)', cells: cells5080,
-    cap: '一条指令 = 一个小格（16×8）。8 种颜色是 8 个 warp，每个 warp 管 16 格（64×32）。', n: '128' },
-  { h: 'H100：wgmma', tpl: 'repeat(2, 1fr) / 1fr',
-    cells: '<div style="background:#4c9be8">warpgroup 0<br>64×128</div><div style="background:#22a06b">warpgroup 1<br>64×128</div>',
-    cap: '一条指令 = 一条横带（64×128），由一个 warpgroup 的 4 个 warp 合发。', n: '2' },
-  { h: 'B200：tcgen05.mma', tpl: '1fr / 1fr', cells: '<div style="background:#8e6fd8">128×128<br>1 个线程发出</div>',
-    cap: '一条指令 = 整个 tile。', n: '1' }
-];
-document.getElementById('tiles').innerHTML = tiles.map(t =>
-  `<div class="card"><h3>${t.h}</h3><div class="tile" style="grid-template:${t.tpl}">${t.cells}</div>` +
-  `<p class="small">${t.cap}</p><div class="nums"><span>K 每推进 16：<b>${t.n}</b> 条指令</span></div></div>`).join('');
-
+// ---------- 2 + 3. roles, code skeleton and step-by-step walkthrough per architecture ----------
 // step: t title, d description, n highlighted nodes, a highlighted arrows, s [state, text] per actor
 const tmaStep = (who, extra) => ({
   t: who + '发起搬运',
   d: who + '等到缓冲 s 空出来后，发 2 条 TMA 指令：A 的 128×64 和 B 的 128×64，各 16 KB。地址计算、swizzle 和拷贝都由 TMA 硬件完成，发完就去等下一块缓冲。' + extra,
   n: [0, 1], a: [0] });
+const range = (a, b) => `${a}–${b}`;
 const archs = [
   { tab: 'RTX 5080（sm_120）', status: '已运行，结果正确', badge: 'b-meas', acc: 4,
     nodes: ['显存 A/B', 'shared memory', '寄存器：操作数', 'Tensor Core', '寄存器：累加器', '显存 C'],
     arrows: ['TMA', 'ldmatrix', 'mma.sync', '结果', 'store'],
     actors: ['producer 线程 ×1', 'consumer warp ×8'],
+    warps: [...Array(8).keys()].map(w => ['comp', 32, `warp ${w} · consumer：算输出块的第 ${range(64 * (w >> 2), 64 * (w >> 2) + 63)} 行、第 ${range(32 * (w & 3), 32 * (w & 3) + 31)} 列`])
+      .concat([['load', 1, 'warp 8 · producer：只有 0 号线程在发 TMA，其余 31 个线程空闲']]),
+    code: [
+      ['', `// arch/sm120_5080.cu：一个 CTA = 9 个 warp = 288 个线程；3 块缓冲，每块 32 KB
+__shared__ uint64_t full_bar[3], empty_bar[3];      // 每块缓冲一对信号
+if (tid == 0)
+  for (s = 0; s < 3; ++s) {
+    mbar_init(full_bar[s], 1);                      // 等 1 次到达：TMA 写满 32 KB
+    mbar_init(empty_bar[s], 8);                     // 等 8 次到达：8 个 consumer warp 都用完
+  }
+__syncthreads();                                    // 整个 kernel 唯一一次全体同步`],
+      ['load', `if (warp == 8) {                                    // ── producer ──
+  if (lane == 0)
+    for (kt = 0; kt < K / 64; ++kt) {
+      s = kt % 3;
+      mbar_wait(empty_bar[s]);                      // 等缓冲 s 空出来
+      mbar_arrive_expect_tx(full_bar[s], 32768);    // 预告：接下来有 32 KB 写入
+      tma_load_2d(sA[s], &tmA, kt * 64, m0, full_bar[s]);
+      tma_load_2d(sB[s], &tmB, kt * 64, n0, full_bar[s]);
+    }                                               // 发完不等数据，直接回到循环开头
+}`],
+      ['comp', `else {                                              // ── consumer：warp 0..7 ──
+  float acc[64] = {};                               // 每个线程负责 64 个输出值
+  for (kt = 0; kt < K / 64; ++kt) {
+    s = kt % 3;
+    mbar_wait(full_bar[s]);                         // 只等这一块数据到齐
+    for (kk = 0; kk < 4; ++kk) {                    // K 方向每次 16 列
+      ldmatrix_x4(...);                             //   6 条：操作数读进寄存器
+      mma_m16n8k16(acc, a, b);                      //   16 条：同步矩阵乘
+    }
+    if (lane == 0) mbar_arrive(empty_bar[s]);       // 归还缓冲 s
+  }
+  C[...] = acc;                                     // 写回显存
+}`]],
     steps: [
       { ...tmaStep('producer ', ''), s: [['busy', '发 2 条 TMA'], ['wait', '等数据，或还在算上一个 k-tile']],
         code: 'mbar_arrive_expect_tx(full[s], 32768);\ntma_load_2d(sA, &tmA, kt * 64, m0, full[s]);\ntma_load_2d(sB, &tmB, kt * 64, n0, full[s]);\n\n汇编：\nSYNCS.ARRIVE.TRANS64 RZ, [UR9], R4\nUTMALDG.2D [UR8], [UR16]' },
@@ -420,6 +559,41 @@ const archs = [
     nodes: ['显存 A/B', 'shared memory', 'Tensor Core', '寄存器：累加器', '显存 C'],
     arrows: ['TMA', 'wgmma，按描述符直读', '结果', 'store'],
     actors: ['producer 线程 ×1', 'consumer warpgroup ×2'],
+    warps: [...Array(8).keys()].map(w => ['comp', 32, `warp ${w}（warpgroup ${w >> 2}）· consumer：输出块的第 ${range(64 * (w >> 2), 64 * (w >> 2) + 63)} 行，4 个 warp 合发一条 wgmma`])
+      .concat([['load', 1, 'warp 8（warpgroup 2）· producer：0 号线程发 TMA'],
+               ['', 0, 'warp 9：空闲，寄存器已让给 consumer'], ['', 0, 'warp 10：空闲'], ['', 0, 'warp 11：空闲']]),
+    code: [
+      ['', `// arch/sm90_h100.cu：一个 CTA = 3 个 warpgroup = 384 个线程；4 块缓冲，每块 32 KB
+__shared__ uint64_t full_bar[4], empty_bar[4];
+if (tid == 0)
+  for (s = 0; s < 4; ++s) { mbar_init(full_bar[s], 1); mbar_init(empty_bar[s], 8); }
+__syncthreads();`],
+      ['load', `if (warpgroup == 2) {                               // ── producer warpgroup ──
+  reg_dealloc<40>();                                // setmaxnreg：寄存器降到 40 个，让给 consumer
+  if (tid == 256)
+    for (kt = 0; kt < K / 64; ++kt) {
+      s = kt % 4;
+      mbar_wait(empty_bar[s]);
+      mbar_arrive_expect_tx(full_bar[s], 32768);
+      tma_load_2d(sA[s], &tmA, kt * 64, m0, full_bar[s]);
+      tma_load_2d(sB[s], &tmB, kt * 64, n0, full_bar[s]);
+    }
+}`],
+      ['comp', `else {                                              // ── consumer：warpgroup 0、1 ──
+  reg_alloc<232>();                                 // setmaxnreg：寄存器升到 232 个
+  float acc[64] = {};
+  for (kt = 0; kt < K / 64; ++kt) {
+    s = kt % 4;
+    mbar_wait(full_bar[s]);
+    wgmma_fence();
+    for (kk = 0; kk < 4; ++kk)                      // 没有 ldmatrix：操作数是两个描述符
+      wgmma_m64n128k16(acc, desc(sA[s] + kk * 32), desc(sB[s] + kk * 32));
+    wgmma_commit_group();
+    wgmma_wait_group0();                            // 等这 4 条异步指令算完
+    if (lane == 0) mbar_arrive(empty_bar[s]);
+  }
+  C[...] = acc;
+}`]],
     steps: [
       { ...tmaStep('producer ', '和 5080 不同的是，producer 所在的 warpgroup 先用 setmaxnreg 把寄存器降到 40 个，让给计算线程。'),
         s: [['busy', '发 2 条 TMA'], ['wait', '等数据，或还在算上一个 k-tile']],
@@ -445,6 +619,46 @@ const archs = [
     nodes: ['显存 A/B', 'shared memory', 'Tensor Core', 'TMEM：累加器', '寄存器', '显存 C'],
     arrows: ['TMA', 'tcgen05.mma，按描述符直读', '结果', 'tcgen05.ld', 'store'],
     actors: ['TMA 线程 ×1', 'MMA 线程 ×1', 'epilogue warp ×4'],
+    warps: [...Array(4).keys()].map(w => ['epi', 32, `warp ${w} · epilogue：读 TMEM 的第 ${range(32 * w, 32 * w + 31)} 行，写回显存`])
+      .concat([['issue', 1, 'warp 4 · MMA：0 号线程发 tcgen05.mma，不碰数据'], ['load', 1, 'warp 5 · TMA：0 号线程发 TMA']]),
+    code: [
+      ['', `// arch/sm100_b200.cu：一个 CTA = 6 个 warp = 192 个线程；4 块缓冲，每块 32 KB
+__shared__ uint64_t full_bar[4], empty_bar[4], acc_bar;
+if (tid == 0) {
+  for (s = 0; s < 4; ++s) { mbar_init(full_bar[s], 1); mbar_init(empty_bar[s], 1); }
+  mbar_init(acc_bar, 1);                            // 整个 tile 算完的信号
+}
+if (warp == 4) tmem_alloc(&tmem, 128);              // 申请 128 列 TMEM，放 128×128 的累加器
+__syncthreads();`],
+      ['load', `if (warp == 5) {                                    // ── TMA 线程 ──
+  if (lane == 0)
+    for (kt = 0; kt < K / 64; ++kt) {
+      s = kt % 4;
+      mbar_wait(empty_bar[s]);
+      mbar_arrive_expect_tx(full_bar[s], 32768);
+      tma_load_2d(sA[s], &tmA, kt * 64, m0, full_bar[s]);
+      tma_load_2d(sB[s], &tmB, kt * 64, n0, full_bar[s]);
+    }
+}`],
+      ['issue', `else if (warp == 4) {                               // ── MMA 线程 ──
+  if (lane == 0) {
+    for (kt = 0; kt < K / 64; ++kt) {
+      s = kt % 4;
+      mbar_wait(full_bar[s]);
+      for (kk = 0; kk < 4; ++kk)                    // 一条指令算整个 128×128×16，结果累加在 TMEM
+        tcgen05_mma(tmem, desc(sA[s] + kk * 32), desc(sB[s] + kk * 32), ...);
+      tcgen05_commit(empty_bar[s]);                 // 算完后由硬件归还缓冲 s；线程不等
+    }
+    tcgen05_commit(acc_bar);                        // 整个 tile 算完时通知 epilogue
+  }
+}`],
+      ['epi', `else {                                              // ── epilogue：warp 0..3 ──
+  mbar_wait(acc_bar);
+  for (c0 = 0; c0 < 128; c0 += 16) {
+    tmem_load_x16(tmem + c0, r);                    // TMEM → 寄存器，每个线程读自己那一行
+    C[...] = r;                                     // 写回显存
+  }
+}`]],
     steps: [
       { ...tmaStep('TMA 线程', 'kernel 开头还多一步：申请 128 列 TMEM，用来放整个 tile 的累加器。'),
         s: [['busy', '发 2 条 TMA'], ['wait', '等数据'], ['wait', '等整个 tile 算完']],
@@ -468,7 +682,6 @@ const archs = [
     ] }
 ];
 let archIdx = 0, stepIdx = 0;
-const $ = id => document.getElementById(id);
 function renderStep() {
   const A = archs[archIdx], S = A.steps[stepIdx];
   $('flow').innerHTML = A.nodes.map((n, i) =>
@@ -482,13 +695,173 @@ function renderStep() {
   $('archStatus').innerHTML = `<span class="badge ${A.badge}">${A.status}</span>`;
   $('prevStep').disabled = stepIdx === 0;
   $('nextStep').disabled = stepIdx === A.steps.length - 1;
-  [...$('archTabs').children].forEach((b, i) => b.classList.toggle('on', i === archIdx));
 }
-function renderArch(i) { archIdx = i; stepIdx = 0; renderStep(); }
-$('archTabs').innerHTML = archs.map((a, i) => `<button onclick="renderArch(${i})">${a.tab}</button>`).join('');
+function renderArch(i) {
+  archIdx = i; stepIdx = 0;
+  const A = archs[i];
+  $('tmap').innerHTML = A.warps.map(w =>
+    `<div class="wrow"><div class="wsq">${[...Array(32).keys()].map(l => `<i class="${l < w[1] ? w[0] : ''}"></i>`).join('')}</div><span>${w[2]}</span></div>`).join('');
+  $('skel').innerHTML = A.code.map(c => `<span class="seg ${c[0]}">${esc(c[1])}</span>`).join('');
+  markTabs('archTabsA', i); markTabs('archTabsB', i);
+  renderStep();
+}
+for (const id of ['archTabsA', 'archTabsB'])
+  $(id).innerHTML = archs.map((a, i) => `<button onclick="renderArch(${i})">${a.tab}</button>`).join('');
 $('prevStep').onclick = () => { stepIdx--; renderStep(); };
 $('nextStep').onclick = () => { stepIdx++; renderStep(); };
 renderArch(0);
+
+// ---------- 4. pipeline simulator: time unit = computing one k-tile ----------
+const SIM = { mode: 2, S: 3, L: 1.5, KT: 12, t: 0, playing: false, sch: null, last: 0 };
+const OVH = 0.07;  // per-k-tile block sync + copy issue when warps are not specialized
+const simModes = ['不重叠：取一块、算一块', '多级流水，不分工', 'WS：producer / consumer'];
+function schedule(mode, S, L, KT) {
+  const iss = [], arr = [], st = [], fin = [];
+  for (let k = 0; k < KT; k++) {
+    const prev = k ? fin[k - 1] : 0;
+    if (mode === 0) { iss[k] = prev; arr[k] = prev + L; st[k] = arr[k]; }
+    else if (mode === 1) {
+      if (k < S - 1) iss[k] = 0;
+      arr[k] = iss[k] + L;
+      const ready = Math.max(prev, arr[k]);
+      if (k + S - 1 < KT) iss[k + S - 1] = ready + OVH;
+      st[k] = ready + OVH;
+    } else { iss[k] = k < S ? 0 : fin[k - S]; arr[k] = iss[k] + L; st[k] = Math.max(arr[k], prev); }
+    fin[k] = st[k] + 1;
+  }
+  return { iss, arr, st, fin, total: fin[KT - 1] };
+}
+function renderSim() {
+  const { mode, L, KT } = SIM, S = mode === 0 ? 1 : SIM.S;
+  const sch = SIM.sch = schedule(mode, S, L, KT), T = sch.total, base = KT * (L + 1);
+  const pc = x => (x / T * 100).toFixed(2) + '%';
+  const blk = (s, len, label, cls) => `<div class="blk ${cls}" style="left:${pc(s)};width:${pc(len)}">${label}</div>`;
+  const lane = (name, body) => `<div class="lane"><div class="lname">${name}</div><div class="track">${body}<div class="tcur"></div></div></div>`;
+  const ks = [...Array(KT).keys()];
+  const comp = ks.map(k => blk(sch.st[k], 1, `算 k${k}`, 'comp')).join('');
+  let html = '';
+  if (mode === 0) html += lane('全部 warp', ks.map(k => blk(sch.iss[k], L, `等 k${k}`, 'load')).join('') + comp);
+  if (mode === 1) html += lane('全部 warp', ks.map(k => blk(sch.st[k] - OVH, OVH, '', 'sync')).join('') + comp);
+  if (mode === 2) html += lane('producer（1 个线程）', ks.map(k => blk(sch.iss[k], 0.06, '', 'issue')).join(''));
+  for (let i = 0; i < S; i++)
+    html += lane(S === 1 ? '缓冲（只有 1 块）' : `缓冲 ${i}`, ks.filter(k => k % S === i).map(k =>
+      blk(sch.iss[k], L, `搬 k${k}`, 'load') + blk(sch.arr[k], sch.st[k] - sch.arr[k], '', 'ready') + blk(sch.st[k], 1, `读 k${k}`, 'read')).join(''));
+  html += lane(mode === 2 ? 'consumer + Tensor Core' : 'Tensor Core', comp);
+  $('simLanes').innerHTML = html;
+
+  const util = KT / sch.total, period = (sch.fin[KT - 1] - sch.fin[KT - 1 - S]) / S;
+  $('simMetrics').innerHTML =
+    `<div><b>${(util * 100).toFixed(0)}%</b>Tensor Core 在工作的时间</div>` +
+    `<div><b>${sch.total.toFixed(1)}</b>算完 12 个 k-tile 的总时间</div>` +
+    `<div><b>${(base / sch.total).toFixed(2)}×</b>相对“不重叠”的速度</div>` +
+    `<div><b>${Math.max(0, period - 1).toFixed(2)}</b>稳定后每个 k-tile 的等待</div>`;
+  const wait = Math.max(0, period - 1);
+  $('simRule').innerHTML = mode === 0
+    ? `每个 k-tile 都要先等 ${L} 取数据，再算 1。Tensor Core 只有 1 / (1 + ${L}) = ${(100 / (1 + L)).toFixed(0)}% 的时间在工作。`
+    : wait < 0.005 + (mode === 1 ? OVH : 0)
+      ? `<b>延迟被完全掩盖。</b>访存延迟 ${L} ≤ (缓冲块数 − 1) × 计算时间 = ${S - 1}，数据总是提前到齐。` + (mode === 1 ? `剩下的等待是每个 k-tile ${OVH} 的全体同步和发拷贝指令。` : 'Tensor Core 除了开头，不用等。')
+      : `<b>流水不够深。</b>访存延迟 ${L} > (缓冲块数 − 1) × 计算时间 = ${S - 1}，数据来不及提前到，每个 k-tile 平均要等 ${wait.toFixed(2)}。加一块缓冲，或者缩短延迟，才能补上。`;
+  $('simLval').textContent = `${L}（算一个 k-tile 的时间为 1）`;
+  $('simCmp').innerHTML = simModes.map((name, m) => {
+    const tot = schedule(m, m === 0 ? 1 : SIM.S, L, KT).total;
+    return `<div class="bar-row"><div class="name">${name}${m ? `，${SIM.S} 块缓冲` : ''}</div>` +
+      `<div class="bar-track"><div class="bar-fill ${m === mode ? 'hl' : ''}" style="width:${(tot / base * 100).toFixed(1)}%"></div></div>` +
+      `<div class="val">${tot.toFixed(1)}</div></div>`;
+  }).join('');
+  $('simSwrap').style.visibility = mode === 0 ? 'hidden' : 'visible';
+  markTabs('simMode', mode); markTabs('simS', SIM.S - 2);
+  renderSimState();
+}
+function renderSimState() {
+  const { mode, L, KT, sch, t } = SIM, S = mode === 0 ? 1 : SIM.S, T = sch.total;
+  document.querySelectorAll('#simLanes .tcur').forEach(c => { c.style.left = (t / T * 100).toFixed(2) + '%'; });
+  $('simT').value = Math.round(t / sch.total * 1000);
+  $('simTval').textContent = `时刻 ${t.toFixed(2)} / ${sch.total.toFixed(1)}`;
+  const cards = [];
+  for (let i = 0; i < S; i++) {
+    let st = ['empty', '空，可以放新数据'];
+    for (let k = i; k < KT; k += S) if (t >= sch.iss[k] && t < sch.fin[k]) {
+      st = t < sch.arr[k] ? ['load', `k${k} 在路上，${Math.round((t - sch.iss[k]) / L * 100)}%`]
+        : t < sch.st[k] ? ['ready', `k${k} 已到齐，等着用`] : ['read', `k${k} 正在被读`];
+    }
+    cards.push(`<div class="slot ${st[0]}"><b>${S === 1 ? '缓冲' : '缓冲 ' + i}</b>${st[1]}</div>`);
+  }
+  const cur = sch.st.findIndex((s, k) => t >= s && t < sch.fin[k]), next = sch.st.findIndex(s => s > t);
+  cards.push(`<div class="slot ${cur >= 0 ? 'comp' : 'idle'}"><b>Tensor Core</b>${cur >= 0 ? `在算 k${cur}` : next >= 0 ? `空转，等 k${next}` : '全部算完'}</div>`);
+  $('simSlots').innerHTML = cards.join('');
+}
+function simTick() {
+  const now = performance.now();
+  SIM.t += (now - SIM.last) / 1000 * SIM.sch.total / 10;
+  SIM.last = now;
+  if (SIM.t >= SIM.sch.total) { SIM.t = SIM.sch.total; simStop(); }
+  renderSimState();
+}
+function simStop() { clearInterval(SIM.timer); SIM.timer = null; SIM.playing = false; $('simPlay').textContent = '播放'; }
+function simReset() { simStop(); renderSim(); SIM.t = SIM.sch.total * 0.4; renderSimState(); }
+function setSimMode(i) { SIM.mode = i; simReset(); }
+function setSimS(i) { SIM.S = i + 2; simReset(); }
+$('simMode').innerHTML = simModes.map((m, i) => `<button onclick="setSimMode(${i})">${m}</button>`).join('');
+$('simS').innerHTML = [2, 3, 4].map((s, i) => `<button onclick="setSimS(${i})">${s}</button>`).join('');
+$('simL').oninput = e => { SIM.L = +e.target.value; simReset(); };
+$('simT').oninput = e => { simStop(); SIM.t = e.target.value / 1000 * SIM.sch.total; renderSimState(); };
+$('simPlay').onclick = () => {
+  if (SIM.playing) return simStop();
+  if (SIM.t >= SIM.sch.total) SIM.t = 0;
+  SIM.playing = true; SIM.last = performance.now(); SIM.timer = setInterval(simTick, 40);
+  $('simPlay').textContent = '暂停';
+};
+simReset();
+
+// ---------- 5. one MMA instruction's footprint on the 128x128 output tile ----------
+const warpColors = ['#4c9be8', '#22a06b', '#f5a524', '#8e6fd8', '#e5484d', '#12a4b5', '#c2569b', '#7c8a2e'];
+let cells5080 = '';
+for (let r = 0; r < 8; r++) for (let c = 0; c < 16; c++) cells5080 += `<div style="background:${warpColors[(r >> 2) * 4 + (c >> 2)]}"></div>`;
+const tiles = [
+  { h: '5080：mma.sync', tpl: 'repeat(8, 1fr) / repeat(16, 1fr)', cells: cells5080,
+    cap: '一条指令 = 一个小格（16×8）。8 种颜色是 8 个 warp，每个 warp 管 16 格（64×32）。', n: '128' },
+  { h: 'H100：wgmma', tpl: 'repeat(2, 1fr) / 1fr',
+    cells: '<div style="background:#4c9be8">warpgroup 0<br>64×128</div><div style="background:#22a06b">warpgroup 1<br>64×128</div>',
+    cap: '一条指令 = 一条横带（64×128），由一个 warpgroup 的 4 个 warp 合发。', n: '2' },
+  { h: 'B200：tcgen05.mma', tpl: '1fr / 1fr', cells: '<div style="background:#8e6fd8">128×128<br>1 个线程发出</div>',
+    cap: '一条指令 = 整个 tile。', n: '1' }
+];
+$('tiles').innerHTML = tiles.map(t =>
+  `<div class="card"><h3>${t.h}</h3><div class="tile" style="grid-template:${t.tpl}">${t.cells}</div>` +
+  `<p class="small">${t.cap}</p><div class="nums"><span>K 每推进 16：<b>${t.n}</b> 条指令</span></div></div>`).join('');
+
+// ---------- 7. measured on RTX 5080 ----------
+const perf = {
+  sizes: ['2048', '4096', '8192'],
+  rows: [
+    { k: 'sync1',  name: '不重叠（先搬完再算）',              v: [61.15, 75.46, 75.97] },
+    { k: 'sync2',  name: '不重叠 ×2 block（CTA 间互相掩盖）',  v: [73.29, 93.26, 103.99] },
+    { k: 'multi',  name: '多级流水，cp.async，不分工',          v: [73.02, 92.26, 99.09] },
+    { k: 'mtma',   name: '多级流水 + TMA，不分工',             v: [75.60, 96.02, 103.48] },
+    { k: 'wscp',   name: 'WS，但用 cp.async 搬',               v: [72.32, 91.34, 98.68] },
+    { k: 'wstma',  name: 'WS + TMA',                           v: [80.48, 102.22, 110.40], cls: 'hl' },
+    { k: 'cublas', name: 'cuBLAS（参考）',                      v: [89.23, 104.50, 109.77], cls: 'ref' }
+  ]
+};
+const fmtPct = (a, b) => { const x = (a / b - 1) * 100; return (x >= 0 ? '+' : '') + x.toFixed(1) + '%'; };
+function renderPerf(si) {
+  $('bars').innerHTML = perf.rows.map(r =>
+    `<div class="bar-row"><div class="name">${r.name}</div>` +
+    `<div class="bar-track"><div class="bar-fill ${r.cls || ''}" style="width:${(r.v[si] / 115 * 100).toFixed(1)}%"></div></div>` +
+    `<div class="val">${r.v[si].toFixed(1)}</div></div>`).join('');
+  const g = k => perf.rows.find(r => r.k === k).v[si];
+  const steps = [
+    ['让搬和算重叠', fmtPct(g('multi'), g('sync1')), '不重叠 → 多级流水'],
+    ['换成 TMA', fmtPct(g('mtma'), g('multi')), '多级流水 → 加 TMA'],
+    ['再做 WS', fmtPct(g('wstma'), g('mtma')), '加 TMA → WS + TMA'],
+    ['对比 cuBLAS', fmtPct(g('wstma'), g('cublas')), 'WS + TMA 相对 cuBLAS']
+  ];
+  $('steps').innerHTML = steps.map(s =>
+    `<div class="step"><div class="small">${s[0]}</div><b>${s[1]}</b><div class="small">${s[2]}</div></div>`).join('');
+  markTabs('sizeTabs', si);
+}
+$('sizeTabs').innerHTML = perf.sizes.map((s, i) => `<button onclick="renderPerf(${i})">${s}×${s}×${s}</button>`).join('');
+renderPerf(1);
 </script>
 </body>
 </html>
